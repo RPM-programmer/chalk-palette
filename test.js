@@ -1,26 +1,5 @@
-# v1.5.0
-## Версия 2.5.0 (4 опубликованный релиз)
-### Также модуль доступен на:
-* ###  на npm 
-* ### ссылка на скачивание [www.npmjs.com](https://www.npmjs.com/package/@prm-programmer/safe-chalk)
-## В модуле появились дополнительные цвета и эффекты (+140 цветов и разные типы шрифта)
-### Скачивание:
-```java
-npm i chalk-palette
-```
-### Использование:
-#### CommonJS
-```javascript
-// Импортируем модуль через commonjs
-const safeChalk = require("chalk");
-```
-#### ES Modules
-```javascript
-// Импортируем модуль через ES Modules
-import safeChalk from "@prm-programmer/safe-chalk";
-```
-### Выполнение
-```javascript
+const safeChalk = require("./index.js");
+
 // ОКРАШИВАНИЕ ТЕКСТА
 // Синий текст
 console.log(safeChalk.Blue("Blue"));
@@ -50,13 +29,3 @@ console.log(safeChalk.italic('Italic'));
 console.log(safeChalk.strikethrough('Strikethrough'));
 // Инверсия цветов
 console.log(safeChalk.inverse('Inverse'));
-
-```
-
-### Результат 
-
-<img width="328" height="276" alt="Снимок экрана от 2026-09-04 17-37-45" src="https://github.com/user-attachments/assets/ef019be5-9e60-4b8d-b4b1-f4e6aaa2215b" />
-
-### ramanapavel@gmail.com или p7841744@gmail.com
-
-@RPM-programmer

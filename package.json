@@ -1,6 +1,6 @@
 {
-  "name": "@prm-programmer/safe-chalk",
-  "version": "2.5.0",
+  "name": "chalk-palette",
+  "version": "1.5.1",
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {
