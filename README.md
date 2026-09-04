@@ -1,8 +1,8 @@
-# v1.5.4
-## Версия 1.5.4
+# v1.5.5
+## Версия 1.5.5
 ### Также модуль доступен на:
 * ###  на npm 
-* ### ссылка на скачивание [www.npmjs.com](https://www.npmjs.com/package/chalk-palette/v/1.5.4)
+* ### ссылка на скачивание [www.npmjs.com](https://www.npmjs.com/package/chalk-palette/v/1.5.5)
 ## В модуле появились дополнительные цвета и эффекты (+140 цветов и разные типы шрифта)
 ### Скачивание:
 ```java
@@ -12,12 +12,12 @@ npm i chalk-palette
 #### CommonJS
 ```javascript
 // Импортируем модуль через commonjs
-const safeChalk = require("chalk");
+const safeChalk = require("chalk-palette");
 ```
 #### ES Modules
 ```javascript
 // Импортируем модуль через ES Modules
-import safeChalk from "@prm-programmer/safe-chalk";
+import safeChalk from "chalk-palette";
 ```
 ### Выполнение
 ```javascript
