@@ -1,8 +1,8 @@
-# v1.5.3
-## Версия 2.5.3
+# v1.5.4
+## Версия 1.5.4
 ### Также модуль доступен на:
 * ###  на npm 
-* ### ссылка на скачивание [www.npmjs.com](https://www.npmjs.com/package/@prm-programmer/safe-chalk)
+* ### ссылка на скачивание [www.npmjs.com](https://www.npmjs.com/package/chalk-palette/v/1.5.4)
 ## В модуле появились дополнительные цвета и эффекты (+140 цветов и разные типы шрифта)
 ### Скачивание:
 ```java
