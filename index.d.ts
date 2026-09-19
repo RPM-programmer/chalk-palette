@@ -1,8 +1,4 @@
-// Описываем структуру одной функции в цепочке
-interface ChalkInstance {
-  (text?: string): ChalkInstance | string;
-
-  // Системные стили
+interface BaseChalkMethods {
   reset(): ChalkInstance;
   bold(): ChalkInstance;
   dim(): ChalkInstance;
@@ -11,34 +7,150 @@ interface ChalkInstance {
   inverse(): ChalkInstance;
   hidden(): ChalkInstance;
   strikethrough(): ChalkInstance;
-
-  // Базовые системные фоны
   bgRed(): ChalkInstance;
   bgGreen(): ChalkInstance;
   bgYellow(): ChalkInstance;
   bgBlue(): ChalkInstance;
-
-  // --- ВАША ПАЛИТРА ЦВЕТОВ ТЕКСТА ---
   Red(): ChalkInstance;
   Blue(): ChalkInstance;
+  IndianRed(): ChalkInstance;
+  LightCoral(): ChalkInstance;
+  Salmon(): ChalkInstance;
+  DarkSalmon(): ChalkInstance;
+  LightSalmon(): ChalkInstance;
+  Crimson(): ChalkInstance;
+  FireBrick(): ChalkInstance;
+  DarkRed(): ChalkInstance;
+  Pink(): ChalkInstance;
+  LightPink(): ChalkInstance;
+  HotPink(): ChalkInstance;
+  DeepPink(): ChalkInstance;
+  MediumVioletRed(): ChalkInstance;
+  PaleVioletRed(): ChalkInstance;
+  Coral(): ChalkInstance;
   Tomato(): ChalkInstance;
+  OrangeRed(): ChalkInstance;
+  DarkOrange(): ChalkInstance;
   Orange(): ChalkInstance;
   Gold(): ChalkInstance;
   Yellow(): ChalkInstance;
+  LightYellow(): ChalkInstance;
+  LemonChiffon(): ChalkInstance;
+  LightGoldenrodYellow(): ChalkInstance;
+  PapayaWhip(): ChalkInstance;
+  Moccasin(): ChalkInstance;
+  PeachPuff(): ChalkInstance;
+  PaleGoldenrod(): ChalkInstance;
+  Khaki(): ChalkInstance;
+  DarkKhaki(): ChalkInstance;
+  GreenYellow(): ChalkInstance;
+  Chartreuse(): ChalkInstance;
+  LawnGreen(): ChalkInstance;
   Lime(): ChalkInstance;
+  LimeGreen(): ChalkInstance;
+  PaleGreen(): ChalkInstance;
+  LightGreen(): ChalkInstance;
+  MediumSpringGreen(): ChalkInstance;
+  SpringGreen(): ChalkInstance;
+  SeaGreen(): ChalkInstance;
+  ForestGreen(): ChalkInstance;
   Green(): ChalkInstance;
-  Cyan(): ChalkInstance;
+  DarkGreen(): ChalkInstance;
+  YellowGreen(): ChalkInstance;
+  OliveDrab(): ChalkInstance;
+  Olive(): ChalkInstance;
+  DarkOliveGreen(): ChalkInstance;
+  MediumAquamarine(): ChalkInstance;
+  DarkSeaGreen(): ChalkInstance;
+  LightSeaGreen(): ChalkInstance;
+  DarkCyan(): ChalkInstance;
   Teal(): ChalkInstance;
+  Aqua(): ChalkInstance;
+  Cyan(): ChalkInstance;
+  LightCyan(): ChalkInstance;
+  PaleTurquoise(): ChalkInstance;
+  Aquamarine(): ChalkInstance;
+  Turquoise(): ChalkInstance;
+  MediumTurquoise(): ChalkInstance;
+  DarkTurquoise(): ChalkInstance;
+  CadetBlue(): ChalkInstance;
+  SteelBlue(): ChalkInstance;
+  LightSteelBlue(): ChalkInstance;
+  PowderBlue(): ChalkInstance;
+  LightBlue(): ChalkInstance;
+  SkyBlue(): ChalkInstance;
+  LightSkyBlue(): ChalkInstance;
+  DeepSkyBlue(): ChalkInstance;
+  DodgerBlue(): ChalkInstance;
+  CornflowerBlue(): ChalkInstance;
+  RoyalBlue(): ChalkInstance;
+  MediumBlue(): ChalkInstance;
+  DarkBlue(): ChalkInstance;
   Navy(): ChalkInstance;
   MidnightBlue(): ChalkInstance;
+  Lavender(): ChalkInstance;
+  Thistle(): ChalkInstance;
+  Plum(): ChalkInstance;
+  Violet(): ChalkInstance;
+  Orchid(): ChalkInstance;
+  Fuchsia(): ChalkInstance;
   Magenta(): ChalkInstance;
+  MediumOrchid(): ChalkInstance;
+  MediumPurple(): ChalkInstance;
+  Amethyst(): ChalkInstance;
+  BlueViolet(): ChalkInstance;
+  DarkViolet(): ChalkInstance;
+  DarkOrchid(): ChalkInstance;
+  DarkMagenta(): ChalkInstance;
   Purple(): ChalkInstance;
+  Indigo(): ChalkInstance;
+  SlateBlue(): ChalkInstance;
+  DarkSlateBlue(): ChalkInstance;
+  MediumSlateBlue(): ChalkInstance;
+  Cornsilk(): ChalkInstance;
+  BlanchedAlmond(): ChalkInstance;
+  Bisque(): ChalkInstance;
+  NavajoWhite(): ChalkInstance;
+  Wheat(): ChalkInstance;
+  BurlyWood(): ChalkInstance;
+  Tan(): ChalkInstance;
+  RosyBrown(): ChalkInstance;
+  SandyBrown(): ChalkInstance;
+  Goldenrod(): ChalkInstance;
+  DarkGoldenrod(): ChalkInstance;
+  Peru(): ChalkInstance;
+  Chocolate(): ChalkInstance;
+  SaddleBrown(): ChalkInstance;
+  Sienna(): ChalkInstance;
+  Brown(): ChalkInstance;
+  Maroon(): ChalkInstance;
   White(): ChalkInstance;
+  Snow(): ChalkInstance;
+  Honeydew(): ChalkInstance;
+  MintCream(): ChalkInstance;
+  Azure(): ChalkInstance;
+  AliceBlue(): ChalkInstance;
+  GhostWhite(): ChalkInstance;
+  WhiteSmoke(): ChalkInstance;
+  Seashell(): ChalkInstance;
+  Beige(): ChalkInstance;
+  OldLace(): ChalkInstance;
+  FloralWhite(): ChalkInstance;
+  Ivory(): ChalkInstance;
+  AntiqueWhite(): ChalkInstance;
+  Linen(): ChalkInstance;
+  LavenderBlush(): ChalkInstance;
+  MistyRose(): ChalkInstance;
+  Gainsboro(): ChalkInstance;
+  LightGray(): ChalkInstance;
+  Silver(): ChalkInstance;
+  DarkGray(): ChalkInstance;
   Gray(): ChalkInstance;
+  DimGray(): ChalkInstance;
+  LightSlateGray(): ChalkInstance;
+  SlateGray(): ChalkInstance;
+  DarkSlateGray(): ChalkInstance;
   Black(): ChalkInstance;
-  // Добавьте сюда остальные редкие цвета (IndianRed, Khaki и т.д.) через двоеточие (): ChalkInstance;
-
-  // --- ВАША ПАЛИТРА ЦВЕТОВ ФОНА ---
   bgTomato(): ChalkInstance;
   bgOrange(): ChalkInstance;
   bgGold(): ChalkInstance;
@@ -52,15 +164,36 @@ interface ChalkInstance {
   bgPurple(): ChalkInstance;
   bgWhite(): ChalkInstance;
   bgBlack(): ChalkInstance;
-  // Добавьте сюда остальные фоны (bgIndianRed и т.д.) через двоеточие (): ChalkInstance;
-
-  /** Динамический пользовательский цвет, заданный через setCustomColor */
   custom(): ChalkInstance;
-  
-  /** Устанавливает кастомные RGB компоненты (0-255) для метода .custom() */
+}
+declare class AnimationInstance {
+  rainbow(text: string, speed?: number): { stop(): void };
+  typewriter(text: string, speed?: number): Promise<void>;
+  matrix(duration?: number): Promise<void>;
+  glitch(text: string, duration?: number): Promise<void>;
+  pulse(text: string, duration?: number): Promise<void>;
+  fire(duration?: number): Promise<void>;
+  matrix(duration?: number, colorName?: 'green' | 'orange' | 'blue' | 'yellow' | 'red'): Promise<void>;
+  passwordMask(question?: string, maskChar?: string): Promise<string>;
+  progressBar(totalSteps?: number): { update(currentStep: number): void };
+  gradient(text: string, colorFrom: string, colorTo: string): string;
+  spinner(text?: string, style?: 'dots' | 'line' | 'arrows'): { stop(finalStatus?: string): void };
+}
+type InvertCase<T extends string> = T extends `${infer F}${infer R}`
+  ? F extends Capitalize<F>
+    ? `${Uncapitalize<F>}${R}`
+    : `${Capitalize<F>}${R}`
+  : T;
+type InvertedMethods = {
+  [K in keyof BaseChalkMethods as InvertCase<Extract<K, string>>]: BaseChalkMethods[K];
+};
+interface ChalkCallable {
+  (text?: string): ChalkInstance | string;
   setCustomColor(red: number, green: number, blue: number): void;
 }
-
-// Объявляем, что модуль экспортирует этот объект
+export type ChalkInstance = ChalkCallable & BaseChalkMethods & InvertedMethods & {
+  customise(str: string): string;
+  animation: AnimationInstance;
+};
 declare const myChalk: ChalkInstance;
 export = myChalk;
