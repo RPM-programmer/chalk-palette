@@ -78,5 +78,36 @@ chalkInstance.customise = function(str) {
   console.log(words.join(' '));
   return words.join(" ");
 };
+chalkInstance.hexToRgb = function(hex){
+  hex = hex.replace(/^#/, '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+chalkInstance.rgbToHex = function (r, g, b) {
+  const toHex = num => num.toString(16).padStart(2, '0').toUpperCase();
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+chalkInstance.hexToRgbOb = function(hex) {
+  hex = hex.replace(/^#/, '');
+  const num = parseInt(hex, 16);
+  return {
+    red: (num >> 16) & 255,
+    green: (num >> 8) & 255,
+    blue: num & 255
+  };
+};
+chalkInstance.hex = function(hex, text) {
+  const rgb = chalkInstance.hexToRgbOb(hex);
+  const startTag = `\u001b[38;2;${rgb.red};${rgb.green};${rgb.blue}m`;
+  const endTag = ANSI_STYLES.reset;
+  return `${startTag}${text}${endTag}`;
+};
+
+chalkInstance.Hex = chalkInstance.hex;
+chalkInstance.HexToRgbOb = chalkInstance.hexToRgbOb;
+chalkInstance.RgbToHex = chalkInstance.rgbToHex;
+chalkInstance.HexToRgb = chalkInstance.hexToRgb;
 
 module.exports = chalkInstance;

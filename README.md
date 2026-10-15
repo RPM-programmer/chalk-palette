@@ -26,6 +26,44 @@ The library is divided into two parts: basic methods (available directly via `ch
 
 ---
 
+## 🎨 Advanced Color Utilities & HEX Support
+
+Now `chalk-palette` includes full support for **HEX colors**, **RGB conversions**, and **TrueColor (24-bit)** terminal output with zero third-party dependencies.
+
+### Features
+* **Full HEX support:** Use short formats (`#f00`) or standard formats (`#00F0F0`).
+* **Safe parsing:** Automatically handles missing `#` symbols and falls back safely on invalid inputs.
+* **Blazing fast:** Powered by low-level bitwise operations.
+
+### Usage Examples
+
+#### 1. Colorize Terminal Text with HEX
+```javascript
+const clk = require('chalk-palette');
+
+// Print beautiful cyan text
+console.log(clk.hex('#00F0F0', 'Hello, colorful world!'));
+
+// Supports short HEX codes as well
+console.log(clk.hex('#f00', 'Red text'));
+```
+
+#### 2. Color Conversion Utilities
+```javascript
+// Convert HEX to RGB Object
+const rgbObj = clk.hexToRgbOb('#00F0F0'); 
+// Returns: { red: 0, green: 240, blue: 240 }
+
+// Convert HEX to RGB CSS String
+const rgbStr = clk.hexToRgb('#00F0F0'); 
+// Returns: "rgb(0, 240, 240)"
+
+// Convert RGB numbers back to HEX
+const hexStr = clk.rgbToHex(0, 240, 240); 
+// Returns: "#00F0F0"
+```
+
+
 ### 🎨 1. Basic Styling Methods
 
 #### `chalk.[ColorName](text)` / `chalk.[style].[ColorName](text)`

@@ -1,3 +1,8 @@
+export interface RgbColor {
+  red: number;
+  green: number;
+  blue: number;
+}
 interface BaseChalkMethods {
   reset(): ChalkInstance;
   bold(): ChalkInstance;
@@ -167,6 +172,10 @@ interface BaseChalkMethods {
 
   /** Use your custom RGB color / Использовать свой RGB цвет */
   custom(): ChalkInstance;
+  hexToRgbOb(hex: string): RgbColor;
+  hexToRgb(hex: string): string;
+  rgbToHex(r: number, g: number, b: number): string;
+  hex(hex: string, text: string): string;
 }
 
 declare class AnimationInstance {
