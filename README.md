@@ -5,8 +5,7 @@
 </p>
 
 ---
-> **chalk-palette** is an ultra-lightweight Node.js library that transforms dull, monochrome terminal text into a vibrant, interactive interface. It supports over 140 colors, gradients, and full-fledged visual effects (VFX) like "Matrix" or "Fire."
-
+> **chalk-palette** is an ultra-lightweight Node.js library that transforms dull, monochrome terminal text into a vibrant, interactive interface. It supports over 140 colors, gradients, full-fledged visual effects (VFX) like "Matrix" or "Fire," and built-in interactive retro-games.
 
 ---
 
@@ -18,11 +17,13 @@ Simply install the package via your package manager:
 npm install chalk-palette
 ```
 
+*Note: Ensure you have [FFmpeg](https://ffmpeg.org/) installed in your system PATH if you plan to use audio visualization or video streaming features.*
+
 ---
 
 ## 📖 API Reference
 
-The library is divided into two parts: basic methods (available directly via `chalk`) and animated methods (available via `chalk.animation`).
+The library is divided into three key parts: basic formatting methods, advanced terminal animations (VFX), and interactive CLI mini-games.
 
 ---
 
@@ -63,6 +64,7 @@ const hexStr = clk.rgbToHex(0, 240, 240);
 // Returns: "#00F0F0"
 ```
 
+---
 
 ### 🎨 1. Basic Styling Methods
 
@@ -82,36 +84,36 @@ chalk.setCustomColor(255, 128, 0); // Saved orange
 console.log(chalk.custom("This text will be orange"));
 ```
 
-#### `chalk.customise(text)`
+#### `chalk.url(text)` / `chalk.Url(text)`
 * **What it does:** Finds links in the text and turns them into clickable terminal hyperlinks. Punctuation marks surrounding the links remain intact.
 * **Arguments:** `text` (String) — the string containing text and links.
-* **What it returns:** A formatted string (String) and automatically outputs it via `console.log`.
+* **What it returns:** A formatted string (String).
 
 ---
 
-### 🎬 2. Animations and UI elements (`chalk.animation.*`)
+### 🎬 2. Animations, UI Elements & Spinners (`chalk.animation.*`)
 
 > 💡 **Important:** Most animations return a `Promise`. Use `await` to ensure effects play sequentially.
 
 #### `.gradient(text, colorFrom, colorTo)`
 * **What it does:** Colors the text with a smooth TrueColor gradient. Each character gets its own shade.
 * **Arguments:**
-* `text` (String) — the source text. 
-* `colorFrom`, `colorTo` (String) — names of the start and end colors from the palette (e.g., `'Red'`, `'Blue'`).
+  * `text` (String) — the source text. 
+  * `colorFrom`, `colorTo` (String) — names of the start and end colors from the palette (e.g., `'Red'`, `'Blue'`).
 * **What it returns:** A string (String) containing ANSI codes. Does **not** return a Promise; output via `console.log`.
 
 #### `.typewriter(text, speed)`
 * **What it does:** Prints text to the screen character by character, simulating manual typing.
 * **Arguments:**
-* `text` (String) — the text to output. 
-* `speed` (Number) — delay in milliseconds between characters (default: `50`).
+  * `text` (String) — the text to output. 
+  * `speed` (Number) — delay in milliseconds between characters (default: `50`).
 * **What it returns:** `Promise<void>`.
 
 #### `.rainbow(text, speed)`
 * **What it does:** Starts an infinite loop where the text cycles through all the colors of the rainbow in place.
 * **Arguments:**
-* `text` (String) — the text. 
-* `speed` (Number) — the color-changing speed in ms (default: `50`).
+  * `text` (String) — the text. 
+  * `speed` (Number) — the color-changing speed in ms (default: `50`).
 * **Returns:** An object with a control method: `{ stop: () => void }`.
 * **Example:**
 ```javascript
@@ -122,9 +124,20 @@ setTimeout(() => fx.stop(), 3000); // Stops the rainbow after 3 seconds
 #### `.spinner(text, style)`
 * **Function:** Creates an animated spinner (loading indicator) at the beginning of the line.
 * **Arguments:**
-* `text` (String) — the text next to the spinner. 
-* `style` (String) — the animation style (`'dots'`, `'line'`, `'arrows'`).
+  * `text` (String) — the text next to the spinner. 
+  * `style` (String) — the animation style (`'dots'`, `'line'`, `'arrows'`).
 * **Returns:** A control object: `{ stop: (finalStatus) => void }`. The `.stop()` method stops the animation, removes the spinner, displays a green checkmark, and outputs the final status.
+
+#### `.radarSpinner(text)`
+* **Function:** A non-blocking single-line radar spinner. Perfect for tracking heavy file loops or disk scans.
+* **Arguments:** `text` (String) — the tracking text description.
+* **Returns:** A control object: `{ update: (newText) => void, stop: (finalStatus) => void }`.
+* **Example:**
+```javascript
+const scan = chalk.animation.radarSpinner("Scanning project...");
+scan.update("Reading: /src/animation.js");
+scan.stop("Done!");
+```
 
 #### `.progressBar(totalSteps)`
 * **Function:** Renders a progress bar that automatically changes color from red (at the start) to green (at the end).
@@ -134,14 +147,45 @@ setTimeout(() => fx.stop(), 3000); // Stops the rainbow after 3 seconds
 #### `.passwordMask(question, maskChar)`
 * **Function:** Masks user keyboard input with asterisks (or any other character).
 * **Arguments:**
-* `question` (String) — the prompt text (e.g., `"Enter password: "`). * `maskChar` (String) — the mask character (default: `*`).
+  * `question` (String) — the prompt text (e.g., `"Enter password: "`). 
+  * `maskChar` (String) — the mask character (default: `*`).
 * **Returns:** `Promise<string>` — returns the raw string entered by the user.
 
 ---
 
-### 🖥️ 3. Full-screen visual effects (VFX)
+### 🖥️ 3. Full-Screen Visual Effects (VFX) & Telemetry
 
 > ⚠️ **Screen behavior:** All functions below automatically render the animation on an alternate terminal screen. Upon completion, they clear the animation and restore your console to its original state without cluttering the log history.
+
+#### `.audioVisualizer(duration)` *(Also available via root `chalk.audioVisualizer`)*
+* **Action:** Captures microphone data using FFmpeg and renders a highly responsive 24-bit real-time streaming graphic equalizer.
+* **Arguments:** `duration` (Number, in ms, default `10000`).
+* **Returns:** `Promise<void>`.
+
+#### `.plasma(duration)`
+* **Action:** Generates a dynamic, liquid-like procedural 24-bit plasma color-shift field based on old-school 90s demoscene algorithms.
+* **Arguments:** `duration` (Number, in ms, default `5000`).
+* **Returns:** `Promise<void>`.
+
+#### `.warpSpeed(duration)`
+* **Action:** Simulates hyperspace space-travel. Starfield particles expand into long neon speed streaks flowing from the screen center.
+* **Arguments:** `duration` (Number, in ms, default `4000`).
+* **Returns:** `Promise<void>`.
+
+#### `.cyberRadar(duration)`
+* **Action:** Spawns a full-viewport tactical sonar circular matrix sweep loop that highlights spotted tracking targets.
+* **Arguments:** `duration` (Number, in ms, default `6000`).
+* **Returns:** `Promise<void>`.
+
+#### `.textDecrypt(finalText, duration)` *(Also available via root `chalk.textDecrypt`)*
+* **Action:** Displays a string as a chaotic sequence of glitching cypher-runes, freezing character-by-character until the clean word settles in green.
+* **Arguments:** `finalText` (String), `duration` (Number, in ms, default `3000`).
+* **Returns:** `Promise<void>`.
+
+#### `.textDissolve(text)`
+* **Action:** Causes a line of text to logically fracture into individual sand particles that tumble downward under simulated gravity.
+* **Arguments:** `text` (String).
+* **Returns:** `Promise<void>`.
 
 #### `.textAssemble(text, duration)`
 * **What it does:** Scatters letters across the screen, then smoothly draws them toward the center to assemble the final word.
@@ -149,7 +193,7 @@ setTimeout(() => fx.stop(), 3000); // Stops the rainbow after 3 seconds
 * **Returns:** `Promise<void>`.
 
 #### `.textLaser(text, duration)`
-* **What it does:** Draws a moving laser beam that behind scorched, colored text characters.
+* **What it does:** Draws a moving laser beam that leaves behind scorched, colored text characters.
 * **Arguments:** `text` (String), `duration` (Number, in ms, default `2500`).
 * **Returns:** `Promise<void>`.
 
@@ -166,14 +210,16 @@ setTimeout(() => fx.stop(), 3000); // Stops the rainbow after 3 seconds
 #### `.matrix(duration, colorName)`
 * **Action:** A full-screen "digital rain" effect featuring characters in the style of *The Matrix* movie.
 * **Arguments:**
-* `duration` (Number, in ms, default `5000`). 
-* `colorName` (String) — the color of the rain (`'green'`, `'orange'`, `'blue'`, `'yellow'`, `'red'`).
+  * `duration` (Number, in ms, default `5000`). 
+  * `colorName` (String) — the color of the rain (`'green'`, `'orange'`, `'blue'`, `'yellow'`, `'red'`).
 * **Returns:** `Promise<void>`.
 
 #### `.fire(duration)`
 * **Action:** A full-screen procedural generator of raging flames based on heat distribution physics.
 * **Arguments:** `duration` (Number, in ms, default `5000`).
-* **Returns:** `Promise<void>`. #### `.glitch(text, duration)`
+* **Returns:** `Promise<void>`.
+
+#### `.glitch(text, duration)`
 * **What it does:** Centers the text, makes it shake violently horizontally, and replaces some characters with hacker-style glyphs.
 * **Arguments:** `text` (String), `duration` (Number, in ms, default `3000`).
 * **Returns:** `Promise<void>`.
@@ -186,9 +232,25 @@ setTimeout(() => fx.stop(), 3000); // Stops the rainbow after 3 seconds
 #### `.textExplode(text, config)`
 * **What it does:** Types out the text, highlights the central character (the "C4 charge"), pulses, and then explodes the string, creating a circular shockwave and scattering ash.
 * **Arguments:**
-* `text` (String) — the text. 
-* `config` (Object) — explosion parameters: `{ type: 'c4'|'nuke'|'torpedo', duration: 3000, c4Color: 'red' }`.
+  * `text` (String) — the text. 
+  * `config` (Object) — explosion parameters: `{ type: 'c4'|'nuke'|'torpedo', duration: 3000, c4Color: 'red' }`.
 * **Returns:** `Promise<void>`.
+
+---
+
+### 🎮 4. Fully-Interactive Retro Games (`chalk.games.*`)
+
+> 🕹️ **Input Handling:** Games capture keyboard arrow triggers seamlessly, adapt fluidly to pane scaling, and restore your terminal input state safely upon termination. They are available via the `.games` space or direct root shortcuts (`chalk.snake()`, `chalk.pong()`).
+
+#### `.snake()`
+* **Action:** Starts classic Snake arcade. Control a green serpent using keyboard arrow keys, consume TrueColor red apples `🍎`, grow your structure length, and track score metrics.
+* **Returns:** `Promise<void>`.
+
+#### `.pong()`
+* **Action:** Launches retro Pong against a tracking predictive AI paddle. Score updates dynamically on a top scoreboard frame.
+* **Returns:** `Promise<void>`.
+
+---
 
 ## 📄 License
 

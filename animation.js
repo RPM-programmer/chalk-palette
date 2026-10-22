@@ -1,15 +1,14 @@
-const codes = require("./rgb-codes.js");
+const path = require("path");
+const codes = require(path.join(__dirname, "rgb-codes.js"));
 const RGB_COLORS = codes.rgb;
 const execSync = require("child_process").execSync;
-
 if (process.platform === "win32") {
     try {
         execSync("chcp 65001", { stdio: "ignore" });
     } catch (e) {}
 }
-
 class animation {
-    constructor() {
+constructor() {
         this.reset = codes.ansi ? codes.ansi.reset : "\u001b[0m";
         this.cleanLine = "\u001b[G\u001b[K"; 
         this.hideCursor = "\u001b[?25l";
@@ -24,16 +23,16 @@ class animation {
             this.lowerCaseColors[key.toLowerCase()] = RGB_COLORS[key];
         }
 
-    }
-    rgbToAnsi256(r, g, b) {
+}
+rgbToAnsi256(r, g, b) {
         if (r === g && g === b) {
             if (r < 8) return 16;
             if (r > 248) return 231;
             return Math.round(((r - 8) / 247) * 24) + 232;
         }
         return 16 + 36 * Math.floor(r / 255 * 5) + 6 * Math.floor(g / 255 * 5) + Math.floor(b / 255 * 5);
-    }
-    rainbow(text, speed = 50) {
+}
+rainbow(text, speed = 50) {
         if (!text || typeof text !== "string") return { stop: () => {} };
         let phase = 0;
         const chars = Array.from(text);
@@ -62,8 +61,8 @@ class animation {
                 process.stdout.write(this.showCursor + "\n");
             }
         };
-    }
-    typewriter(text, speed = 50) {
+}
+typewriter(text, speed = 50) {
         if (!text || typeof text !== "string") return Promise.resolve();
         const chars = Array.from(text);
         let i = 0;
@@ -80,8 +79,8 @@ class animation {
                 }
             }, speed);
         });
-    }
-    glitch(text, duration = 3000) {
+}
+glitch(text, duration = 3000) {
         if (!text || typeof text !== "string") return Promise.resolve();
         const chars = Array.from(text);
         const glitchSymbols = "!@#$%^&*()_+-=[]{}|;':\",./<>?X█▓▒░";
@@ -115,8 +114,8 @@ class animation {
                 resolve();
             }, duration);
         });
-    }
-    pulse(text, duration = 4000) {
+}
+pulse(text, duration = 4000) {
         if (!text || typeof text !== "string") return Promise.resolve();
         
         process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
@@ -127,14 +126,14 @@ class animation {
         const centerX = Math.max(1, Math.floor((columns - text.length) / 2));
         const pos = "\u001b[" + centerY + ";" + centerX + "H";
 
-        let alpha = 0; // Фаза пульсации
+        let alpha = 0;
 
         return new Promise((resolve) => {
             const intervalId = setInterval(() => {
-                // Высчитываем яркость по синусоиде от 0 до 255
+               
                 const brightness = Math.floor((Math.sin(alpha) + 1) * 127.5);
                 
-                // Изменяем яркость для всех трех каналов (получаем оттенки серого/белого)
+               
                 const colorCode = "\u001b[38;2;" + brightness + ";" + brightness + ";" + brightness + "m";
                 
                 process.stdout.write("\u001b[2J" + pos + colorCode + text + this.reset);
@@ -147,101 +146,8 @@ class animation {
                 resolve();
             }, duration);
         });
-    }
-    fire(duration = 5000) {
-        process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
-        const w = process.stdout.columns || 80;
-        const h = process.stdout.rows || 24;
-        let fireBuffer = Array(w * h).fill(0);
-        const fireChars = " .:-=+*#%@";
-        return new Promise((resolve) => {
-            const intervalId = setInterval(() => {
-                for (let x = 0; x < w; x++) {
-                    fireBuffer[(h - 1) * w + x] = Math.random() > 0.4 ? 9 : 0;
-                }
-                let frame = "\u001b[H";
-                for (let y = 0; y < h - 1; y++) {
-                    for (let x = 0; x < w; x++) {
-                        const srcIndex = (y + 1) * w + ((x + Math.floor(Math.random() * 3) - 1 + w) % w);
-                        const currentVal = fireBuffer[srcIndex];
-                        const newVal = currentVal > 0 ? currentVal - (Math.random() > 0.6 ? 1 : 0) : 0;
-                        fireBuffer[y * w + x] = newVal;
-                        const char = fireChars[newVal];
-                        let color = "\u001b[30m";
-                        if (newVal > 7) color = "\u001b[1;37m";
-                        else if (newVal > 5) color = "\u001b[33m";
-                        else if (newVal > 2) color = "\u001b[31m";
-                        else if (newVal > 0) color = "\u001b[2;31m";
-                        frame += color + char;
-                    }
-                }
-                process.stdout.write(frame);
-            }, 50);
-            setTimeout(() => {
-                clearInterval(intervalId);
-                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
-                resolve();
-            }, duration);
-        });
-    }
-    matrix(duration = 5000, colorName = "green") {
-        const columns = process.stdout.columns || 80;
-        const rows = process.stdout.rows || 24;
-        const drops = Array(columns).fill(0).map(() => Math.floor(Math.random() * -rows));
-        const matrixChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ";
-        const fireChars = " .:-=+*#%@"; 
-        process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
-        return new Promise((resolve) => {
-            const intervalId = setInterval(() => {
-                let frame = "";
-                for (let x = 0; x < columns; x++) {
-                    const y = drops[x];
-                    if (y >= 0 && y < rows) {
-                        const charList = (colorName.toLowerCase() === "orange") ? fireChars : matrixChars;
-                        const char = charList[Math.floor(Math.random() * charList.length)];
-                        const pos = "\u001b[" + (y + 1) + ";" + (x + 1) + "H";
-                        let color = "";
-                        const isHead = Math.random() > 0.92;
-                        if (isHead) {
-                            color = "\u001b[1;37m";
-                        } else {
-                            switch (colorName.toLowerCase()) {
-                                case "orange":
-                                    color = (Math.random() > 0.5) ? "\u001b[33m" : "\u001b[31m"; 
-                                    break;
-                                case "blue":
-                                    color = "\u001b[34m";
-                                    break;
-                                case "yellow":
-                                    color = "\u001b[33m";
-                                    break;
-                                case "red":
-                                    color = "\u001b[31m";
-                                    break;
-                                case "green":
-                                default:
-                                    color = "\u001b[32m";
-                                    break;
-                            }
-                        }
-                        frame += pos + color + char;
-                    }
-                    drops[x]++;
-                    if (drops[x] >= rows) {
-                        drops[x] = Math.random() > 0.95 ? 0 : Math.floor(Math.random() * -5);
-                    }
-                }
-                process.stdout.write(frame);
-            }, 40);
-            setTimeout(() => {
-                clearInterval(intervalId);
-                // Возвращаем старый экран на место
-                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
-                resolve();
-            }, duration);
-        });
-    }
-    passwordMask(question = "Password: ", maskChar = "*") {
+}
+passwordMask(question = "Password: ", maskChar = "*") {
         return new Promise((resolve, reject) => {
             process.stdout.write(question + this.showCursor);
             const stdin = process.stdin;
@@ -290,8 +196,8 @@ class animation {
             }
             stdin.on("data", handleKey);
         });
-    }
-    progressBar(totalSteps = 100) {
+}
+progressBar(totalSteps = 100) {
         const reset = this.reset;
         process.stdout.write(this.hideCursor);
         return {
@@ -317,8 +223,8 @@ class animation {
                 }
             }
         };
-    }
-    gradient(text, colorFrom, colorTo) {
+}
+gradient(text, colorFrom, colorTo) {
         if (!text || typeof text !== "string") return "";
         const startColor = this.lowerCaseColors[colorFrom.toLowerCase()];
         const endColor = this.lowerCaseColors[colorTo.toLowerCase()];
@@ -335,8 +241,8 @@ class animation {
             result += colorCode + chars[i];
         }
         return result + this.reset;
-    }
-    spinner(text = "Loading...", style = "dots") {
+}
+spinner(text = "Loading...", style = "dots") {
         process.stdout.write(this.hideCursor);
         const themes = {
             dots: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
@@ -358,8 +264,8 @@ class animation {
                 process.stdout.write(this.showCursor);
             }
         };
-    }
-    textAssemble(text, duration = 4500) {
+}
+textAssemble(text, duration = 4500) {
     if (!text || typeof text !== 'string') return Promise.resolve();
     process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
     const rows = process.stdout.rows || 24;
@@ -912,6 +818,1061 @@ textShimmer(text, duration = 2000) {
         }, 16);
     });
 }
+bouncingBall(text = "Loading...", duration = 6000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    let ballX = Math.floor(columns / 2);
+    let ballY = Math.floor(rows / 2);
+    let vx = (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.4);
+    let vy = (Math.random() > 0.5 ? 1 : -1) * (0.3 + Math.random() * 0.3);
+    const hitColors = [,
+        [255, 99, 71]
+    ];
+    let currentColor = hitColors[0];
+    let lastX = Math.round(ballX);
+    let lastY = Math.round(ballY);
+    const textX = Math.max(1, Math.floor((columns - text.length) / 2));
+    const textY = Math.floor(rows / 2) + 2; 
+    process.stdout.write(`\u001b[${textY};${textX}H\u001b[1;37m${text}${this.reset}`);
+    const intervalId = setInterval(() => {
+        ballX += vx;
+        ballY += vy;
+        let cX = Math.round(ballX);
+        let cY = Math.round(ballY);
+        if (cX < 1) cX = 1;
+        if (cX > columns) cX = columns;
+        if (cY < 1) cY = 1;
+        if (cY > rows) cY = rows;
+        let hit = false;
+        let ballChar = "●";
+        if (ballX <= 1 || ballX >= columns) {
+            vx = -vx + (Math.random() * 0.1 - 0.05);
+            vy += (Math.random() * 0.1 - 0.05);
+            hit = true;
+            ballChar = vx > 0 ? "❱" : "❰"; 
+        }
+        if (ballY <= 1 || ballY >= rows) {
+            vy = -vy + (Math.random() * 0.1 - 0.05);
+            vx += (Math.random() * 0.1 - 0.05);
+            hit = true;
+            ballChar = vy > 0 ? "⬊" : "⬉"; 
+        }
+        const minSpeed = 0.3;
+        if (Math.abs(vx) < minSpeed) vx = (vx < 0 ? -minSpeed : minSpeed);
+        if (Math.abs(vy) < minSpeed) vy = (vy < 0 ? -minSpeed : minSpeed);
+        if (hit) {
+            const nextIndex = Math.floor(Math.random() * hitColors.length);
+            currentColor = hitColors[nextIndex] || hitColors[0];
+        }
+        let frame = "";
+        if (cX !== lastX || cY !== lastY) {
+            if (lastY === textY && lastX >= textX && lastX < textX + text.length) {
+                const charToRestore = text[lastX - textX];
+                frame += `\u001b[${lastY};${lastX}H\u001b[1;37m${charToRestore}`;
+            } else {
+                frame += `\u001b[${lastY};${lastX}H `;
+            }
+        }
+        const [r, g, b] = Array.isArray(currentColor) ? currentColor : [255, 255, 255];
+        const colorCode = `\u001b[38;2;${r};${g};${b}m`;
+        frame += `\u001b[${cY};${cX}H${colorCode}${ballChar}${this.reset}`;
+        process.stdout.write(frame);
+        lastX = cX;
+        lastY = cY;
+    }, 30); 
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            clearInterval(intervalId);
+            process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+            process.stdout.write(`\r\u001b[K\u001b[32m✓\u001b[0m ${text}\n`);
+            resolve();
+        }, duration);
+    });
+}
+fireworks(duration = 5000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const gravity = 0.18;
+    const resistance = 0.92;
+    const sparkStages = ["█", "▓", "▒", "░", "*", "·", " "];
+    const palettes = [
+        [[255, 50, 50], [255, 150, 50], [255, 200, 100]], 
+        [[50, 255, 50], [150, 255, 100], [200, 255, 200]],
+        [[50, 150, 255], [100, 200, 255], [200, 230, 255]], 
+        [[255, 50, 255], [255, 150, 255], [255, 220, 255]], 
+        [[255, 255, 50], [255, 200, 50], [255, 255, 180]] 
+    ];
+    let state = "launch";
+    let rocketX = Math.floor(Math.random() * (columns - 20)) + 10;
+    let rocketY = rows - 1;
+    let rocketVy = -(1.2 + Math.random() * 0.4);
+    let rocketVx = Math.random() * 0.4 - 0.2; 
+    let targetY = Math.floor(rows * 0.2) + Math.floor(Math.random() * (rows * 0.25));
+    let lastRocketX = Math.round(rocketX);
+    let lastRocketY = Math.round(rocketY);
+    let particles = [];
+    const intervalId = setInterval(() => {
+        let frame = "";
+        if (state === "launch") {
+            rocketX += rocketVx;
+            rocketY += rocketVy;
+            let cX = Math.round(rocketX);
+            let cY = Math.round(rocketY);
+            if (cX < 1) cX = 1; if (cX > columns) cX = columns;
+            if (cY < 1) cY = 1; if (cY > rows) cY = rows;
+            if (cX !== lastRocketX || cY !== lastRocketY) {
+                if (lastRocketY >= 1 && lastRocketY <= rows && lastRocketX >= 1 && lastRocketX <= columns) {
+                    frame += `\u001b[${lastRocketY};${lastRocketX}H `;
+                }
+            }
+            if (cY >= 1 && cY <= rows && cX >= 1 && cX <= columns) {
+                frame += `\u001b[${cY};${cX}H\u001b[1;37m↑${this.reset}`;
+            }
+            lastRocketX = cX;
+            lastRocketY = cY;
+            if (cY <= targetY || rocketVy >= -0.1) {
+                state = "explode";
+                frame += `\u001b[${cY};${cX}H `;
+                const selectedPalette = palettes[Math.floor(Math.random() * palettes.length)];
+                const particleCount = 45 + Math.floor(Math.random() * 20);
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const force = 1 + Math.random() * 4.5;
+                    particles.push({
+                        x: rocketX,
+                        y: rocketY,
+                        vx: Math.cos(angle) * force * 1.8,
+                        vy: Math.sin(angle) * force * 0.9,
+                        lastX: Math.round(rocketX),
+                        lastY: Math.round(rocketY),
+                        age: 0,
+                        maxAge: 25 + Math.floor(Math.random() * 15),
+                        palette: selectedPalette
+                    });
+                }
+            }
+        } 
+        else if (state === "explode") {
+            let allDead = true;
+            particles.forEach((p) => {
+                if (p.age >= p.maxAge) return;
+                allDead = false;
+                if (p.lastY >= 1 && p.lastY <= rows && p.lastX >= 1 && p.lastX <= columns) {
+                    frame += `\u001b[${p.lastY};${p.lastX}H `;
+                }
+                p.vx *= resistance;
+                p.vy *= resistance;
+                p.vy += gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                let cX = Math.round(p.x);
+                let cY = Math.round(p.y);
+                p.lastX = cX;
+                p.lastY = cY;
+                p.age++;
+                if (cX < 1 || cX > columns || cY < 1 || cY > rows) {
+                    p.age = p.maxAge;
+                    return;
+                }
+                const lifeProgress = p.age / p.maxAge;
+                let stageIndex = Math.floor(lifeProgress * sparkStages.length);
+                if (stageIndex >= sparkStages.length) stageIndex = sparkStages.length - 1;
+                if (lifeProgress > 0.6 && Math.random() < 0.25) return;
+                let charToRender = sparkStages[stageIndex];
+                let colorRGB = p.palette[0];
+                if (lifeProgress > 0.35 && lifeProgress <= 0.7) colorRGB = p.palette[1];
+                if (lifeProgress > 0.7) colorRGB = p.palette[2];
+                const [r, g, b] = colorRGB;
+                const colorCode = `\u001b[38;2;${r};${g};${b}m`;
+                frame += `\u001b[${cY};${cX}H${colorCode}${charToRender}${this.reset}`;
+            });
+            if (allDead) {
+                state = "launch";
+                rocketX = Math.floor(Math.random() * (columns - 20)) + 10;
+                rocketY = rows - 1;
+                rocketVy = -(1.2 + Math.random() * 0.4);
+                rocketVx = Math.random() * 0.4 - 0.2;
+                targetY = Math.floor(rows * 0.15) + Math.floor(Math.random() * (rows * 0.25));
+                lastRocketX = Math.round(rocketX);
+                lastRocketY = Math.round(rocketY);
+                particles = [];
+            }
+        }
+        if (frame.length > 0) {
+            process.stdout.write(frame);
+        }
+    }, 33);
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            clearInterval(intervalId);
+            process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+            process.stdout.write(`\r\u001b[K\u001b[32m\u001b[0m`);
+            resolve();
+        }, duration);
+    });
+}
+fire(duration = 5000) {
+        process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+        const w = process.stdout.columns || 80;
+        const h = process.stdout.rows || 24;
+        let fireBuffer = Array(w * h).fill(0);
+        const fireChars = " .:-=+*#%@";
+        return new Promise((resolve) => {
+            const intervalId = setInterval(() => {
+                for (let x = 0; x < w; x++) {
+                    fireBuffer[(h - 1) * w + x] = Math.random() > 0.4 ? 9 : 0;
+                }
+                let frame = "\u001b[H";
+                for (let y = 0; y < h - 1; y++) {
+                    for (let x = 0; x < w; x++) {
+                        const srcIndex = (y + 1) * w + ((x + Math.floor(Math.random() * 3) - 1 + w) % w);
+                        const currentVal = fireBuffer[srcIndex];
+                        const newVal = currentVal > 0 ? currentVal - (Math.random() > 0.6 ? 1 : 0) : 0;
+                        fireBuffer[y * w + x] = newVal;
+                        const char = fireChars[newVal];
+                        let color = "\u001b[30m";
+                        if (newVal > 7) color = "\u001b[1;37m";
+                        else if (newVal > 5) color = "\u001b[33m";
+                        else if (newVal > 2) color = "\u001b[31m";
+                        else if (newVal > 0) color = "\u001b[2;31m";
+                        frame += color + char;
+                    }
+                }
+                process.stdout.write(frame);
+            }, 50);
+            setTimeout(() => {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }, duration);
+        });
+}
+matrix(duration = 5000, colorName = "green") {
+        const columns = process.stdout.columns || 80;
+        const rows = process.stdout.rows || 24;
+        const drops = Array(columns).fill(0).map(() => Math.floor(Math.random() * -rows));
+        const matrixChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ";
+        const fireChars = " .:-=+*#%@"; 
+        process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+        return new Promise((resolve) => {
+            const intervalId = setInterval(() => {
+                let frame = "";
+                for (let x = 0; x < columns; x++) {
+                    const y = drops[x];
+                    if (y >= 0 && y < rows) {
+                        const charList = (colorName.toLowerCase() === "orange") ? fireChars : matrixChars;
+                        const char = charList[Math.floor(Math.random() * charList.length)];
+                        const pos = "\u001b[" + (y + 1) + ";" + (x + 1) + "H";
+                        let color = "";
+                        const isHead = Math.random() > 0.92;
+                        if (isHead) {
+                            color = "\u001b[1;37m";
+                        } else {
+                            switch (colorName.toLowerCase()) {
+                                case "orange":
+                                    color = (Math.random() > 0.5) ? "\u001b[33m" : "\u001b[31m"; 
+                                    break;
+                                case "blue":
+                                    color = "\u001b[34m";
+                                    break;
+                                case "yellow":
+                                    color = "\u001b[33m";
+                                    break;
+                                case "red":
+                                    color = "\u001b[31m";
+                                    break;
+                                case "green":
+                                default:
+                                    color = "\u001b[32m";
+                                    break;
+                            }
+                        }
+                        frame += pos + color + char;
+                    }
+                    drops[x]++;
+                    if (drops[x] >= rows) {
+                        drops[x] = Math.random() > 0.95 ? 0 : Math.floor(Math.random() * -5);
+                    }
+                }
+                process.stdout.write(frame);
+            }, 40);
+            setTimeout(() => {
+                clearInterval(intervalId);
+               
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }, duration);
+        });
+}
+menu(options = [], title = "Выберите опцию:") {
+    if (!options.length) return Promise.resolve(null);
+    process.stdout.write(this.hideCursor);
+    let selectedIndex = 0;
+    const stdin = process.stdin;
+    stdin.setRawMode(true);
+    stdin.resume();
+    stdin.setEncoding("utf8");
+    const render = () => {
+        let output = this.cleanLine + `\u001b[1m${title}\u001b[0m\n`;
+        options.forEach((opt, idx) => {
+            if (idx === selectedIndex) {
+                output += `\x1b[2K \u001b[32m➔ ${opt}\u001b[0m\n`;
+            } else {
+                output += `\x1b[2K   ${opt}\n`;
+            }
+        });
+        output += `\u001b[${options.length + 1}A`;
+        process.stdout.write(output);
+    };
+    render();
+    return new Promise((resolve) => {
+        const handleKey = (key) => {
+            const buffer = Buffer.from(key);
+            if (buffer.length === 1 && buffer[0] === 3) {
+                cleanup();
+                process.exit(0);
+            }
+            if (buffer.length === 1 && (buffer[0] === 13 || buffer[0] === 10)) {
+                cleanup();
+                process.stdout.write(`\u001b[${options.length + 1}B\n`); 
+                resolve({ index: selectedIndex, value: options[selectedIndex] });
+                return;
+            }
+            if (key === "\u001b[A") { 
+                selectedIndex = (selectedIndex - 1 + options.length) % options.length;
+                render();
+            } else if (key === "\u001b[B") {
+                selectedIndex = (selectedIndex + 1) % options.length;
+                render();
+            }
+        };
+        const cleanup = () => {
+            stdin.setRawMode(false);
+            stdin.pause();
+            stdin.removeListener("data", handleKey);
+            process.stdout.write(this.showCursor);
+        };
+        stdin.on("data", handleKey);
+    });
+}
+typingGame(text) {
+    if (!text || typeof text !== "string") return Promise.resolve();
+    process.stdout.write(this.cleanLine + "Наберите текст ниже:\n" + text + "\n\n" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    process.stdout.write(`\u001b[2A\r`);
+    let typed = "";
+    const stdin = process.stdin;
+    stdin.setRawMode(true);
+    stdin.resume();
+    stdin.setEncoding("utf8");
+    return new Promise((resolve) => {
+        const handleKey = (key) => {
+            const buffer = Buffer.from(key);
+            if (buffer.length === 1 && buffer[0] === 3) {
+                cleanup();
+                process.exit(0);
+            }
+            if (buffer[0] === 27) return; 
+            if (buffer.length === 1 && (buffer[0] === 127 || buffer[0] === 8)) {
+                if (typed.length > 0) {
+                    typed = typed.slice(0, -1);
+                }
+            } else {
+                if (typed.length < text.length) {
+                    typed += key;
+                }
+            }
+            let output = "\(\r\)\u001b[K";
+            for (let i = 0; i < text.length; i++) {
+                if (i < typed.length) {
+                    if (typed[i] === text[i]) {
+                        output += `\u001b[32m${text[i]}\u001b[0m`;
+                    } else {
+                        output += `\u001b[41;37m${text[i]}\u001b[0m`;
+                    }
+                } else {
+                    output += text[i]; 
+                }
+            }
+            process.stdout.write(output);
+            if (typed === text) {
+                cleanup();
+                process.stdout.write("\n\n\u001b[32m\u001b[0m\n");
+                resolve();
+            }
+        };
+        const cleanup = () => {
+            stdin.setRawMode(false);
+            stdin.pause();
+            stdin.removeListener("data", handleKey);
+            process.stdout.write(this.showCursor);
+        };
+        stdin.on("data", handleKey);
+    });
+}
+starfield(duration = 5000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const centerY = rows / 2;
+    const centerX = columns / 2;
+    const stars = Array(60).fill(0).map(() => ({
+        x: (Math.random() - 0.5) * columns * 2,
+        y: (Math.random() - 0.5) * rows * 2,
+        z: Math.random() * 100 
+    }));
+
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let frame = "\u001b[H\u001b[2J"; 
+
+            stars.forEach(s => {
+                s.z -= 1.8;
+                if (s.z <= 0) {
+                    s.x = (Math.random() - 0.5) * columns * 2;
+                    s.y = (Math.random() - 0.5) * rows * 2;
+                    s.z = 100;
+                }
+                const k = 40 / s.z;
+                const px = Math.round(centerX + s.x * k);
+                const py = Math.round(centerY + s.y * k);
+
+                if (px >= 1 && px <= columns && py >= 1 && py <= rows) {
+                    let color = "\u001b[38;5;236m";
+                    if (s.z < 30) color = "\u001b[1;37m"; 
+                    else if (s.z < 60) color = "\u001b[38;5;248m";
+                    else if (s.z < 80) color = "\u001b[38;5;241m";
+                    const char = s.z < 25 ? "*" : "·";
+                    frame += `\u001b[${py};${px}H${color}${char}`;
+                }
+            });
+            process.stdout.write(frame + this.reset);
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 33);
+    });
+}
+wave(text, duration = 4000) {
+    if (!text || typeof text !== "string") return Promise.resolve();
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const centerY = Math.floor(rows / 2);
+    const centerX = Math.max(1, Math.floor((columns - text.length) / 2));
+    const chars = Array.from(text);
+    let phase = 0;
+    const startTime = Date.now();
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let frame = "\u001b[H\u001b[2J";
+            chars.forEach((char, index) => {
+                const charX = centerX + index;
+                const offset = Math.sin(phase + (index * 0.4)) * 3;
+                const charY = Math.round(centerY + offset);
+                if (charY >= 1 && charY <= rows && charX >= 1 && charX <= columns) {
+                    const brightness = Math.floor(150 + Math.sin(phase + index * 0.4) * 105);
+                    const color = `\u001b[38;2;0;${brightness};255m`;
+                    frame += `\u001b[${charY};${charX}H${color}${char}`;
+                }
+            });
+
+            process.stdout.write(frame + this.reset);
+            phase += 0.15;
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 40);
+    });
+}
+scanline(text, duration = 4000) {
+    if (!text || typeof text !== "string") return Promise.resolve();
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const centerY = Math.floor(rows / 2);
+    const centerX = Math.max(1, Math.floor((columns - text.length) / 2));
+    const chars = Array.from(text);
+    let scanY = 1;
+    const startTime = Date.now();
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let frame = `\u001b[${centerY};${centerX}H`;
+            chars.forEach((char, index) => {
+                const charX = centerX + index;
+                const distance = Math.abs(centerY - Math.floor(scanY));
+                let color = "\u001b[38;2;40;160;40m";
+                if (distance < 3) {
+                    if (distance === 0) color = "\u001b[1;37m";
+                    else if (distance === 1) color = "\u001b[38;2;140;255;140m";
+                    else color = "\u001b[38;2;80;200;80m";
+                }
+
+                frame += color + char;
+            });
+            const currentLineY = Math.floor(scanY);
+            if (currentLineY >= 1 && currentLineY <= rows && currentLineY !== centerY) {
+                frame += `\u001b[${currentLineY};1H\u001b[38;2;0;40;0m` + "—".repeat(columns);
+            }
+            process.stdout.write("\u001b[2J" + frame + this.reset);
+            scanY += 0.4;
+            if (scanY > rows) scanY = 1;
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 25);
+    });
+}
+mandelbrot(duration = 7000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const maxIt = 30;
+    let zoom = 1.0;
+    const startTime = Date.now();
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let frame = "\u001b[H";
+            zoom += 0.07;
+            const moveX = -0.743643887037158704752191506114774;
+            const moveY = 0.131825904205311970493132056385139;
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < columns; x++) {
+                    const cr = (x - columns / 2) / (columns * 0.5 * zoom) + moveX;
+                    const ci = (y - rows / 2) / (rows * 1.0 * zoom) + moveY;
+                    let zr = 0.0, zi = 0.0;
+                    let i = 0;
+                    while (zr * zr + zi * zi < 4.0 && i < maxIt) {
+                        const temp = zr * zr - zi * zi + cr;
+                        zi = 2.0 * zr * zi + ci;
+                        zr = temp;
+                        i++;
+                    }
+
+                    if (i === maxIt) {
+                        frame += " ";
+                    } else {
+                        const factor = i / maxIt;
+                        const r = Math.floor(Math.sin(factor * 3 + zoom) * 127 + 128);
+                        const g = Math.floor(Math.sin(factor * 5 + zoom * 0.5) * 127 + 128);
+                        const b = Math.floor(Math.cos(factor * 2 + zoom) * 127 + 128);
+                        
+                        const chars = ".:-=+*#%@█";
+                        const char = chars[i % chars.length];
+                        
+                        frame += `\u001b[38;2;${r};${g};${b}m${char}`;
+                    }
+                }
+                frame += "\n";
+            }
+            process.stdout.write(frame + this.reset);
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 50);
+    });
+}
+audioVisualizer(duration = 10000) {
+   
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const centerY = Math.floor(rows / 2);
+
+    let audioDevice = "";
+    let inputFormat = "";
+
+    if (process.platform === "win32") {
+        inputFormat = "dshow";
+        audioDevice = "audio=default"; 
+    } else if (process.platform === "darwin") {
+        inputFormat = "avfoundation";
+        audioDevice = ":default"; 
+    } else {
+        inputFormat = "alsa";
+        audioDevice = "default";
+    }
+
+    const { spawn } = require("child_process");
+    
+   
+    const ffmpeg = spawn("ffmpeg", [
+        "-f", inputFormat,
+        "-i", audioDevice,
+        "-ac", "1",          
+        "-ar", "11025",      
+        "-f", "s16le",       
+        "-"
+    ]);
+
+    ffmpeg.stderr.on("data", () => {});
+
+    const stdin = process.stdin;
+    let oldRawMode = false;
+    try {
+        oldRawMode = stdin.isRawMode;
+        stdin.setRawMode(true);
+        stdin.resume();
+        stdin.setEncoding("utf8");
+    } catch (e) {}
+
+   
+   
+    let audioSamples = Array(columns).fill(0);
+    let sampleIdx = 0;
+
+    ffmpeg.stdout.on("data", (chunk) => {
+       
+        for (let i = 0; i < chunk.length; i += 2) {
+            if (i + 1 < chunk.length) {
+                const sample = chunk.readInt16LE(i);
+                
+               
+                const maxGraphHeight = Math.floor(rows / 2) - 1;
+                const volume = (Math.abs(sample) / 32768) * maxGraphHeight;
+
+               
+                audioSamples[sampleIdx] = volume;
+                sampleIdx = (sampleIdx + 1) % columns;
+            }
+        }
+    });
+
+    return new Promise((resolve) => {
+        let timerId;
+
+       
+        const intervalId = setInterval(() => {
+            let out = "\u001b[H";
+
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < columns; x++) {
+                   
+                    const actualIdx = (sampleIdx + x) % columns;
+                    const volume = audioSamples[actualIdx] || 0;
+
+                   
+                    const isInsideWave = y >= (centerY - Math.floor(volume)) && y <= (centerY + Math.floor(volume));
+
+                   
+                    if (isInsideWave && volume > 0.6) {
+                       
+                        let r = 0, g = 255, b = 0;
+                        
+                        const distanceFromCenter = Math.abs(y - centerY);
+                        const maxH = Math.floor(rows / 2);
+                        
+                        if (distanceFromCenter > maxH * 0.6) {
+                            r = 255; g = 50; 
+                        } else if (distanceFromCenter > maxH * 0.25) {
+                            r = 255; g = 215;
+                        }
+
+                       
+                        out += `\u001b[38;2;${r};${g};${b}m█`;
+                    } else if (y === centerY) {
+                        out += "\u001b[38;5;242m-";
+                    } else {
+                        out += " ";
+                    }
+                }
+                out += "\n";
+            }
+
+            process.stdout.write(out + this.reset);
+        }, 33);
+
+        const cleanUp = () => {
+            clearInterval(intervalId);
+            clearTimeout(timerId);
+            try {
+                stdin.setRawMode(oldRawMode);
+                stdin.pause();
+                stdin.removeListener("data", handleKeyPress);
+            } catch (e) {}
+            
+            ffmpeg.kill("SIGKILL");
+            process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+            resolve();
+        };
+
+        const handleKeyPress = (key) => {
+            const bufferKey = Buffer.from(key);
+            if ((bufferKey.length === 1 && bufferKey[0] === 3) || key === "q" || key === "й" || key === "\u001b") {
+                cleanUp();
+            }
+        };
+
+        stdin.on("data", handleKeyPress);
+        timerId = setTimeout(cleanUp, duration);
+
+        ffmpeg.on("error", (err) => {
+            cleanUp();
+            console.error("\n[Chalk Palette Error]: Не удалось запустить аудио-захват.");
+        });
+    });
+}
+plasma(duration = 5000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const startTime = Date.now();
+    let time = 0;
+
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let out = "\u001b[H";
+            time += 0.04;
+
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < columns; x++) {
+                   
+                    const v1 = Math.sin(x * 0.1 + time);
+                    const v2 = Math.sin(0.1 * (x * Math.sin(time / 2) + y * Math.cos(time / 3)) + time);
+                    const cx = x - columns / 2;
+                    const cy = y - rows / 2;
+                    const v3 = Math.sin(Math.sqrt(100 * (cx * cx + cy * cy) + 1) * 0.1 - time);
+                    const total = (v1 + v2 + v3) / 3;
+
+                   
+                    const r = Math.floor(Math.sin(total * Math.PI) * 127 + 128);
+                    const g = Math.floor(Math.cos(total * Math.PI) * 127 + 128);
+                    const b = Math.floor(Math.sin(total * Math.PI + time) * 127 + 128);
+
+                    const chars = " .:-=+*#%@█";
+                    const charIdx = Math.floor(((total + 1) / 2) * (chars.length - 1));
+                    const char = chars[Math.max(0, Math.min(charIdx, chars.length - 1))];
+
+                    out += `\u001b[38;2;${r};${g};${b}m${char}`;
+                }
+                out += "\n";
+            }
+            process.stdout.write(out + this.reset);
+
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 33);
+    });
+}
+warpSpeed(duration = 4000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const centerY = rows / 2;
+    const centerX = columns / 2;
+
+    const stars = Array(40).fill(0).map(() => ({
+        x: (Math.random() - 0.5) * columns,
+        y: (Math.random() - 0.5) * rows,
+        z: Math.random() * 100
+    }));
+
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let out = "\u001b[H\u001b[2J"; 
+            const progress = (Date.now() - startTime) / duration;
+            const speed = 2.0 + progress * 8.0;
+
+            stars.forEach(s => {
+                s.z -= speed;
+                if (s.z <= 0) {
+                    s.x = (Math.random() - 0.5) * columns;
+                    s.y = (Math.random() - 0.5) * rows;
+                    s.z = 100;
+                }
+
+                const k = 30 / s.z;
+                const px = Math.round(centerX + s.x * k);
+                const py = Math.round(centerY + s.y * k);
+
+               
+                const oldK = 30 / (s.z + speed * 1.5);
+                const oldPx = Math.round(centerX + s.x * oldK);
+                const oldPy = Math.round(centerY + s.y * oldK);
+
+                if (px >= 1 && px <= columns && py >= 1 && py <= rows) {
+                    const r = Math.floor(progress * 155) + 100;
+                    const g = Math.floor((1 - progress) * 100) + 155;
+                    const b = 255;
+                    
+                   
+                    if (oldPx !== px || oldPy !== py) {
+                        if (oldPy >= 1 && oldPy <= rows && oldPx >= 1 && oldPx <= columns) {
+                            out += `\u001b[${oldPy};${oldPx}H\u001b[38;2;0;50;150m·`;
+                        }
+                    }
+                    out += `\u001b[${py};${px}H\u001b[38;2;${r};${g};${b}m█`;
+                }
+            });
+
+            process.stdout.write(out + this.reset);
+
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 33);
+    });
+}
+cyberRadar(duration = 6000) {
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const cX = Math.floor(columns / 2);
+    const cY = Math.floor(rows / 2);
+    
+    let angle = 0;
+    const targets = Array(4).fill(0).map(() => ({
+        x: cX + (Math.random() - 0.5) * (columns * 0.6),
+        y: cY + (Math.random() - 0.5) * (rows * 0.6),
+        life: 0
+    }));
+
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            let out = "\u001b[H\u001b[2J";
+            angle += 0.07;
+
+           
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < columns; x++) {
+                    const dx = (x - cX) / 2;
+                    const dy = y - cY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                   
+                    if (Math.abs(dist - 5) < 0.4 || Math.abs(dist - 10) < 0.4) {
+                        out += "\u001b[38;5;236m.";
+                        continue;
+                    }
+
+                   
+                    const targetAngle = Math.atan2(dy, dx) + Math.PI;
+                    const diff = (angle - targetAngle) % (Math.PI * 2);
+                    
+                    if (diff > 0 && diff < 0.5 && dist < 12) {
+                        const greenFade = Math.floor((1 - diff / 0.5) * 200) + 55;
+                        out += `\u001b[38;2;0;${greenFade};0m█`;
+                    } else {
+                       
+                        let targetRendered = false;
+                        targets.forEach(t => {
+                            const tDx = Math.abs(x - t.x);
+                            const tDy = Math.abs(y - t.y);
+                            if (tDx < 1 && tDy < 1 && t.life > 0) {
+                                out += `\u001b[38;2;255;0;0;1m▲`;
+                                targetRendered = true;
+                            }
+                        });
+                        if (!targetRendered) out += " ";
+                    }
+                }
+                out += "\n";
+            }
+
+           
+            targets.forEach(t => {
+                const tDx = (t.x - cX) / 2;
+                const tDy = t.y - cY;
+                const tAngle = Math.atan2(tDy, tDx) + Math.PI;
+                if (Math.abs((angle % (Math.PI * 2)) - tAngle) < 0.1) {
+                    t.life = 1.0;
+                }
+                t.life -= 0.02;
+            });
+
+            process.stdout.write(out + this.reset);
+
+            if (Date.now() - startTime >= duration) {
+                clearInterval(intervalId);
+                process.stdout.write("\u001b[?1049l" + this.showCursor + this.reset);
+                resolve();
+            }
+        }, 40);
+    });
+}
+textDissolve(text) {
+    if (!text || typeof text !== "string") return Promise.resolve();
+    process.stdout.write("\u001b[?1049h\u001b[2J" + this.hideCursor);
+    const rows = process.stdout.rows || 24;
+    const columns = process.stdout.columns || 80;
+    const centerY = Math.floor(rows / 2);
+    const centerX = Math.max(1, Math.floor((columns - text.length) / 2));
+
+    const particles = Array.from(text).map((char, index) => ({
+        char: char,
+        x: centerX + index,
+        y: centerY,
+        lastX: centerX + index,
+        lastY: centerY,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: 0.1 + Math.random() * 0.3,
+        isFalling: false,
+        delay: index * 30
+    }));
+
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            const timePassed = Date.now() - startTime;
+            let frame = "";
+            let allFallen = true;
+
+            particles.forEach(p => {
+                if (timePassed > p.delay) p.isFalling = true;
+
+                if (p.isFalling && p.y < rows - 1) {
+                    allFallen = false;
+                    p.vy += 0.03;
+                    p.x += p.vx;
+                    p.y += p.vy;
+                } else if (p.y >= rows - 1) {
+                    p.y = rows - 1;
+                } else {
+                    allFallen = false;
+                }
+
+                const cx = Math.round(p.x);
+                const cy = Math.round(p.y);
+
+                if (cx !== p.lastX || cy !== p.lastY) {
+                    if (p.lastY >= 1 && p.lastY <= rows && p.lastX >= 1 && p.lastX <= columns) {
+                        frame += `\u001b[${p.lastY};${p.lastX}H `;
+                    }
+                }
+
+                p.lastX = cx; p.lastY = cy;
+
+                if (cy >= 1 && cy <= rows && cx >= 1 && cx <= columns) {
+                    let renderChar = p.char;
+                    let color = "\u001b[1;37m";
+                    
+                    if (p.isFalling && p.y < rows - 1) {
+                        renderChar = Math.random() > 0.5 ? "·" : ":";
+                        color = "\u001b[38;5;244m";
+                    } else if (p.y === rows - 1) {
+                        renderChar = "░";
+                        color = "\u001b[38;2;210;180;140m";
+                    }
+                    frame += `\u001b[${cy};${cx}H${color}${renderChar}`;
+                }
+            });
+
+            process.stdout.write(frame + this.reset);
+
+            if (allFallen || timePassed > 7000) {
+                clearInterval(intervalId);
+                setTimeout(() => {
+                    process.stdout.write("\u001b[2J\u001b[?1049l" + this.showCursor + this.reset);
+                    resolve();
+                }, 1500);
+            }
+        }, 20);
+    });
+}
+textDecrypt(finalText, duration = 3000) {
+    if (!finalText || typeof finalText !== "string") return Promise.resolve();
+    process.stdout.write(this.hideCursor);
+
+    const chars = Array.from(finalText);
+    const glitchSymbols = "!@#$%^&*()_+-=[]{}|;':\",./<>?X█▓▒░";
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            const timePassed = Date.now() - startTime;
+            let progress = timePassed / duration;
+            if (progress > 1) progress = 1;
+
+           
+            const decryptedCount = Math.floor(progress * chars.length);
+            let currentLine = "";
+
+            for (let i = 0; i < chars.length; i++) {
+                if (i < decryptedCount) {
+                   
+                    currentLine += `\u001b[38;2;50;255;50m${chars[i]}`;
+                } else if (chars[i] === " ") {
+                    currentLine += " ";
+                } else {
+                   
+                    const randomChar = glitchSymbols[Math.floor(Math.random() * glitchSymbols.length)];
+                   
+                    currentLine += `\u001b[38;2;0;130;200m${randomChar}`;
+                }
+            }
+
+           
+            process.stdout.write(this.cleanLine + currentLine + this.reset);
+
+            if (progress >= 1) {
+                clearInterval(intervalId);
+               
+                process.stdout.write(this.cleanLine + finalText + this.reset + "\n");
+                process.stdout.write(this.showCursor);
+                resolve();
+            }
+        }, 50);
+    });
+}
+radarSpinner(text = "Scanning files...") {
+    process.stdout.write(this.hideCursor);
+
+   
+    const frames = ["║", "╖", "╕", "╜", "║", "╓", "╒", "╓"];
+    let currentFrame = 0;
+    let currentStatusText = text;
+
+    const intervalId = setInterval(() => {
+        const frame = frames[currentFrame];
+       
+        const coloredFrame = `\u001b[38;2;0;255;100m[${frame}]\u001b[0m`;
+        
+       
+        process.stdout.write(`\r\u001b[K${coloredFrame} ${currentStatusText}`);
+        
+        currentFrame = (currentFrame + 1) % frames.length;
+    }, 100);
+
+    return {
+       
+        update: (newText) => {
+            currentStatusText = newText;
+        },
+       
+        stop: (finalStatus = "Done!") => {
+            clearInterval(intervalId);
+            process.stdout.write(`\r\u001b[K\u001b[32m✓\u001b[0m ${finalStatus}\n`);
+            process.stdout.write(this.showCursor);
+        }
+    };
+}
+
+
+
+
 
 
 
