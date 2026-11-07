@@ -3,7 +3,7 @@ const codes = require(path.join(__dirname, "rgb-codes.js"));
 
 const RGB_COLORS = codes.rgb;
 const ANSI_STYLES = codes.ansi;
-let customColor = [0, 0, 0];
+let customColor = [];
 
 let animationInstance = null;
 let gamesInstance = null;
@@ -62,13 +62,13 @@ function createChalk(activeCodes = []) {
         styleProp.slice(2) in RGB_COLORS
       ) {
         const [r, g, b] = RGB_COLORS[styleProp.slice(2)];
-        nextCode = `\u001b[48;2;\${r};g;{b}m`;
+        nextCode = `\u001b[48;2;${r};${g};${b}m`; // Исправлено экранирование и шаблонизация
       } else if (styleProp in RGB_COLORS) {
         const [r, g, b] = RGB_COLORS[styleProp];
-        nextCode = `\u001b[38;2;\${r};g;{b}m`;
+        nextCode = `\u001b[38;2;${r};${g};${b}m`; // Исправлено экранирование и шаблонизация
       } else if (styleProp === "custom") {
         const [r, g, b] = customColor;
-        nextCode = `\u001b[38;2;\${r};g;{b}m`;
+        nextCode = `\u001b[38;2;${r};${g};${b}m`; // Исправлено экранирование и шаблонизация
       } else {
         return target[prop];
       }
@@ -120,19 +120,22 @@ chalkInstance.hex = (hex, text) => {
   const rgb = chalkInstance.hexToRgbOb(hex);
   return `\u001b[38;2;${rgb.red};${rgb.green};${rgb.blue}m${text}${ANSI_STYLES.reset}`;
 };
+
 chalkInstance.videoPlay = function (videoPath, duration = 10000, options = {}) {
   const videoPlayer = require(path.join(__dirname, "video-play.js"));
-  return videoPlayer.call(this, videoPath, duration, options); // Передаем options
+  return videoPlayer.call(this, videoPath, duration, options);
 };
 
 chalkInstance.cameraStream = function (duration = 15000, options = {}) {
   const cameraStream = require(path.join(__dirname, "camera-stream.js"));
   return cameraStream(duration, options);
 };
+
 chalkInstance.logoAnimation = function (text, options = {}) {
   const logoAnimation = require(path.join(__dirname, "logo-animation.js"));
   return logoAnimation(text, options);
 };
+
 // Динамические пробросы методов быстрого доступа на корень инстанса
 chalkInstance.audioVisualizer = (dur) => getAnimation().audioVisualizer(dur);
 chalkInstance.textDecrypt = (txt, dur) => getAnimation().textDecrypt(txt, dur);
@@ -156,4 +159,5 @@ chalkInstance.StreamCamera = chalkInstance.cameraStream;
 chalkInstance.streamCamera = chalkInstance.cameraStream;
 chalkInstance.LogoAnimation = chalkInstance.logoAnimation;
 chalkInstance.playLogo = chalkInstance.logoAnimation;
+
 module.exports = chalkInstance;
