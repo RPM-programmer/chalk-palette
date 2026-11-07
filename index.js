@@ -129,6 +129,10 @@ chalkInstance.cameraStream = function (duration = 15000, options = {}) {
   const cameraStream = require(path.join(__dirname, "camera-stream.js"));
   return cameraStream(duration, options);
 };
+chalkInstance.logoAnimation = function (text, options = {}) {
+  const logoAnimation = require(path.join(__dirname, "logo-animation.js"));
+  return logoAnimation(text, options);
+};
 // Динамические пробросы методов быстрого доступа на корень инстанса
 chalkInstance.audioVisualizer = (dur) => getAnimation().audioVisualizer(dur);
 chalkInstance.textDecrypt = (txt, dur) => getAnimation().textDecrypt(txt, dur);
@@ -150,4 +154,6 @@ chalkInstance.RadarSpinner = chalkInstance.radarSpinner;
 chalkInstance.CameraStream = chalkInstance.cameraStream;
 chalkInstance.StreamCamera = chalkInstance.cameraStream;
 chalkInstance.streamCamera = chalkInstance.cameraStream;
+chalkInstance.LogoAnimation = chalkInstance.logoAnimation;
+chalkInstance.playLogo = chalkInstance.logoAnimation;
 module.exports = chalkInstance;

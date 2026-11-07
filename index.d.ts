@@ -7,7 +7,14 @@ export interface VideoOptions {
   /** Enable ultra-high resolution Braille matrix rendering / Включить ультра-высокое разрешение через матрицу Брайля */
   hyperExpansion?: boolean;
 }
-
+export interface LogoOptions {
+  /** Animation style: 'forge' (Minecraft fall), 'slide' (horizontal entrance), 'pop' (heartbeat bounce), 'hacker' (sys-command + matrix rain) */
+  style?: "forge" | "slide" | "pop";
+  /** Color name from palette (e.g. 'Gold', 'DeepSkyBlue', 'Green') */
+  color?: string;
+  /** Speed multiplier (Default: 1) */
+  speed?: number;
+}
 export interface CameraOptions {
   /** Mirror the video stream horizontally (Default: true) / Отразить видеопоток по горизонтали (По умолчанию: true) */
   mirror?: boolean;
@@ -344,6 +351,8 @@ interface ChalkUtilityMethods {
   streamCamera(duration?: number, options?: CameraOptions): Promise<void>;
   /** Stream real-time camera video directly into terminal as ASCII (PascalCase alias) / Трансляция видео с веб-камеры в терминал в реальном времени */
   CameraStream(duration?: number, options?: CameraOptions): Promise<void>;
+  logoAnimation(text: string, options?: LogoOptions): Promise<void>;
+  playLogo(text: string, options?: LogoOptions): Promise<void>;
 }
 interface ChalkCallable {
   (text?: string): ChalkInstance | string;

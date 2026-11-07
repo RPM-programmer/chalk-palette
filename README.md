@@ -218,6 +218,15 @@ await chalk.videoPlay("clip.mp4", 15000, { hyperExpansion: true });
 await chalk.cameraStream(20000, { mirror: true, hyperExpansion: false });
 ```
 
+#### `chalk.logoAnimation(text, options)`
+
+- **Action:** Displays a full-screen text animation (3 types available: "forge", "pop", and "slide")
+- **Arguments:**
+- `style`: The type of animation (3 types available: "forge", "pop", and "slide")
+- `color`: The color of the animated text
+- `speed`: The speed of the animation (a higher value results in a faster animation)
+- **Returns:** `Promise<void>`
+
 #### `.audioVisualizer(duration)` _(Also available via root `chalk.audioVisualizer`)_
 
 - **Action:** Captures microphone data using FFmpeg and renders a highly responsive 24-bit real-time streaming graphic equalizer.
