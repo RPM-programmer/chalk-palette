@@ -3,6 +3,17 @@ export interface RgbColor {
   green: number;
   blue: number;
 }
+export interface VideoOptions {
+  /** Enable ultra-high resolution Braille matrix rendering / Включить ультра-высокое разрешение через матрицу Брайля */
+  hyperExpansion?: boolean;
+}
+
+export interface CameraOptions {
+  /** Mirror the video stream horizontally (Default: true) / Отразить видеопоток по горизонтали (По умолчанию: true) */
+  mirror?: boolean;
+  /** Enable ultra-high resolution Braille matrix rendering / Включить ультра-высокое разрешение через матрицу Брайля */
+  hyperExpansion?: boolean;
+}
 interface BaseChalkMethods {
   reset(): ChalkInstance;
   bold(): ChalkInstance;
@@ -172,7 +183,6 @@ interface BaseChalkMethods {
 
   /** Use your custom RGB color / Использовать свой RGB цвет */
   custom(): ChalkInstance;
-  
 }
 declare class GamesInstance {
   /** Launch classic Snake terminal arcade / Запустить классическую змейку в консоли */
@@ -186,7 +196,10 @@ declare class AnimationInstance {
   /** Typewriter simulation / Имитация печатной машинки */
   typewriter(text: string, speed?: number): Promise<void>;
   /** Matrix digital rain / Цифровой дождь Матрицы */
-  matrix(duration?: number, colorName?: 'green' | 'orange' | 'blue' | 'yellow' | 'red'): Promise<void>;
+  matrix(
+    duration?: number,
+    colorName?: "green" | "orange" | "blue" | "yellow" | "red",
+  ): Promise<void>;
   /** Terminal text glitch / Хакерское искажение текста */
   glitch(text: string, duration?: number): Promise<void>;
   /** Smooth text fading / Синусоидальная пульсация текста */
@@ -200,7 +213,10 @@ declare class AnimationInstance {
   /** TrueColor smooth gradient / Плавный 24-битный градиент */
   gradient(text: string, colorFrom: string, colorTo: string): string;
   /** Animated loading indicator / Анимированная крутилка загрузки */
-  spinner(text?: string, style?: 'dots' | 'line' | 'arrows'): { stop(finalStatus?: string): void };
+  spinner(
+    text?: string,
+    style?: "dots" | "line" | "arrows",
+  ): { stop(finalStatus?: string): void };
   /** Bouncing ball loader / Загрузчик со скачущим мячом */
   bouncingBall(text?: string, duration?: number): Promise<void>;
   /** Full-screen procedural physics fireworks / Красочный процедурный салют */
@@ -208,17 +224,33 @@ declare class AnimationInstance {
   /** Assemble text from flying glitching particles / Эффектная сборка текста из хаотичных частиц */
   textAssemble(text: string, duration?: number): Promise<void>;
   /** Explode text into dust / Взрыв строки текста в пыль с ударной волной */
-  textExplode(text: string, config?: { type?: 'nuke' | 'c4' | 'torpedo', duration?: number, side?: 'left' | 'right', c4Index?: number, c4Color?: string }): Promise<void>;
+  textExplode(
+    text: string,
+    config?: {
+      type?: "nuke" | "c4" | "torpedo";
+      duration?: number;
+      side?: "left" | "right";
+      c4Index?: number;
+      c4Color?: string;
+    },
+  ): Promise<void>;
   /** Morph one text string into another / Плавная трансформация одного текста в другой через глитчи */
   textMorph(textFrom: string, textTo: string, duration?: number): Promise<void>;
   /** Retro neon lines saver / Процедурные неоновые линии в стиле 80-х */
-  retroLines(config?: { duration?: number, linesCount?: number, offset?: number }): Promise<void>;
+  retroLines(config?: {
+    duration?: number;
+    linesCount?: number;
+    offset?: number;
+  }): Promise<void>;
   /** Laser burn-in text effect / Лазерное выжигание текста слева направо */
   textLaser(text: string, duration?: number): Promise<void>;
   /** Shimmering light reflex on text / Световой блик, пробегающий по строке текста */
   textShimmer(text: string, duration?: number): Promise<void>;
   /** Interactive terminal selection menu / Интерактивное CLI меню с выбором опций стрелочками */
-  menu(options: string[], title?: string): Promise<{ index: number; value: string } | null>;
+  menu(
+    options: string[],
+    title?: string,
+  ): Promise<{ index: number; value: string } | null>;
   /** Terminal blind typing trainer game / Интерактивная игра-тренажер скорости печати */
   typingGame(text: string): Promise<void>;
   /** 3D Starfield fly-through simulator / Интерактивный полет сквозь трехмерное звездное поле */
@@ -241,13 +273,22 @@ declare class AnimationInstance {
   textDissolve(text: string): Promise<void>;
   /** Matrix-style password decryption text effect / Эффект дешифратора пароля с бегущими глитч-символами */
   textDecrypt(finalText: string, duration?: number): Promise<void>;
-    /** Animated radar spinner for background tasks / Анимированный спиннер-радар для фоновых задач (поиск файлов) */
-  radarSpinner(text?: string): { update(newText: string): void; stop(finalStatus?: string): void };
-
+  /** Animated radar spinner for background tasks / Анимированный спиннер-радар для фоновых задач (поиск файлов) */
+  radarSpinner(text?: string): {
+    update(newText: string): void;
+    stop(finalStatus?: string): void;
+  };
 }
 type InvertCase<T extends string> = T extends `${infer F}${infer R}`
-  ? F extends Capitalize<F> ? `${Uncapitalize<F>}${R}` : `${Capitalize<F>}${R}` : T;
-type InvertedMethods = { [K in keyof BaseChalkMethods as InvertCase<Extract<K, string>>]: BaseChalkMethods[K]; };
+  ? F extends Capitalize<F>
+    ? `${Uncapitalize<F>}${R}`
+    : `${Capitalize<F>}${R}`
+  : T;
+type InvertedMethods = {
+  [K in keyof BaseChalkMethods as InvertCase<
+    Extract<K, string>
+  >]: BaseChalkMethods[K];
+};
 interface ChalkUtilityMethods {
   /** Create a clickable Terminal Hyperlink / Создать кликабельную ссылку для терминала */
   url(str: string): string;
@@ -275,32 +316,59 @@ interface ChalkUtilityMethods {
   RgbToHex(r: number, g: number, b: number): string;
 
   /** Decode and stream video directly into terminal as ASCII / Декодировать и воспроизвести видео в ASCII-графике */
-  videoPlay(videoPath: string, duration?: number): Promise<void>;
-  /** Decode and stream video directly into terminal as ASCII (Alias) */
-  playVideo(videoPath: string, duration?: number): Promise<void>;
-  /** Decode and stream video directly into terminal as ASCII (PascalCase alias) */
-  PlayVideo(videoPath: string, duration?: number): Promise<void>;
+  videoPlay(
+    videoPath: string,
+    duration?: number,
+    options?: VideoOptions,
+  ): Promise<void>;
+  /** Decode and stream video directly into terminal as ASCII (Alias) / Декодировать и воспроизвести видео в ASCII-графике */
+  playVideo(
+    videoPath: string,
+    duration?: number,
+    options?: VideoOptions,
+  ): Promise<void>;
+  /** Decode and stream video directly into terminal as ASCII (PascalCase alias) / Декодировать и воспроизвести видео в ASCII-графике */
+  PlayVideo(
+    videoPath: string,
+    duration?: number,
+    options?: VideoOptions,
+  ): Promise<void>;
   /** Real-time microphone audio visualizer graph / Визуализатор звука с микрофона в реальном времени */
   audioVisualizer(duration?: number): Promise<void>;
   /** Real-time microphone audio visualizer graph (PascalCase alias) */
   AudioVisualizer(duration?: number): Promise<void>;
+
+  /** Stream real-time camera video directly into terminal as ASCII / Трансляция видео с веб-камеры в терминал в реальном времени */
+  cameraStream(duration?: number, options?: CameraOptions): Promise<void>;
+  /** Stream real-time camera video directly into terminal as ASCII (Alias) / Трансляция видео с веб-камеры в терминал в реальном времени */
+  streamCamera(duration?: number, options?: CameraOptions): Promise<void>;
+  /** Stream real-time camera video directly into terminal as ASCII (PascalCase alias) / Трансляция видео с веб-камеры в терминал в реальном времени */
+  CameraStream(duration?: number, options?: CameraOptions): Promise<void>;
 }
 interface ChalkCallable {
   (text?: string): ChalkInstance | string;
   /** Set your custom global RGB values for .custom() method / Задать свои значения RGB для метода .custom() */
   setCustomColor(red: number, green: number, blue: number): void;
 }
-type ChalkInstance = ChalkCallable & BaseChalkMethods & InvertedMethods & ChalkUtilityMethods & {
-  readonly animation: AnimationInstance;
-  /** Access built-in interactive terminal retro-games / Доступ к встроенным консольным играм */
-  readonly games: GamesInstance;
-  snake(): Promise<void>;
-  pong(): Promise<void>;
-  textDecrypt(finalText: string, duration?: number): Promise<void>;
-  TextDecrypt(finalText: string, duration?: number): Promise<void>;
-    radarSpinner(text?: string): { update(newText: string): void; stop(finalStatus?: string): void };
-  RadarSpinner(text?: string): { update(newText: string): void; stop(finalStatus?: string): void };
-
-};
+type ChalkInstance = ChalkCallable &
+  BaseChalkMethods &
+  InvertedMethods &
+  ChalkUtilityMethods & {
+    readonly animation: AnimationInstance;
+    /** Access built-in interactive terminal retro-games / Доступ к встроенным консольным играм */
+    readonly games: GamesInstance;
+    snake(): Promise<void>;
+    pong(): Promise<void>;
+    textDecrypt(finalText: string, duration?: number): Promise<void>;
+    TextDecrypt(finalText: string, duration?: number): Promise<void>;
+    radarSpinner(text?: string): {
+      update(newText: string): void;
+      stop(finalStatus?: string): void;
+    };
+    RadarSpinner(text?: string): {
+      update(newText: string): void;
+      stop(finalStatus?: string): void;
+    };
+  };
 declare const myChalk: ChalkInstance;
 export = myChalk;
