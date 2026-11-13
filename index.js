@@ -1,5 +1,5 @@
 const path = require("path");
-const codes = require(path.join(__dirname, "rgb-codes.js"));
+const codes = require(path.join(__dirname, "src", "rgb-codes.js"));
 
 const RGB_COLORS = codes.rgb;
 const ANSI_STYLES = codes.ansi;
@@ -10,7 +10,9 @@ let gamesInstance = null;
 
 function getAnimation() {
   if (!animationInstance) {
-    const AnimationClass = require(path.join(__dirname, "animation.js"));
+    const AnimationClass = require(
+      path.join(__dirname, "anim", "animation.js"),
+    );
     animationInstance = new AnimationClass();
   }
   return animationInstance;
@@ -18,7 +20,7 @@ function getAnimation() {
 
 function getGames() {
   if (!gamesInstance) {
-    const GamesClass = require(path.join(__dirname, "games.js"));
+    const GamesClass = require(path.join(__dirname, "anim", "games.js"));
     gamesInstance = new GamesClass();
   }
   return gamesInstance;
@@ -122,17 +124,21 @@ chalkInstance.hex = (hex, text) => {
 };
 
 chalkInstance.videoPlay = function (videoPath, duration = 10000, options = {}) {
-  const videoPlayer = require(path.join(__dirname, "video-play.js"));
+  const videoPlayer = require(path.join(__dirname, "video", "video-play.js"));
   return videoPlayer.call(this, videoPath, duration, options);
 };
 
 chalkInstance.cameraStream = function (duration = 15000, options = {}) {
-  const cameraStream = require(path.join(__dirname, "camera-stream.js"));
+  const cameraStream = require(
+    path.join(__dirname, "camera", "camera-stream.js"),
+  );
   return cameraStream(duration, options);
 };
 
-chalkInstance.logoAnimation = function (text, options = {}) {
-  const logoAnimation = require(path.join(__dirname, "logo-animation.js"));
+chalkInstance.logoTextAnimation = function (text, options = {}) {
+  const logoAnimation = require(
+    path.join(__dirname, "logo", "logo-text-animation.js"),
+  );
   return logoAnimation(text, options);
 };
 
@@ -157,7 +163,7 @@ chalkInstance.RadarSpinner = chalkInstance.radarSpinner;
 chalkInstance.CameraStream = chalkInstance.cameraStream;
 chalkInstance.StreamCamera = chalkInstance.cameraStream;
 chalkInstance.streamCamera = chalkInstance.cameraStream;
-chalkInstance.LogoAnimation = chalkInstance.logoAnimation;
+chalkInstance.LogoTextAnimation = chalkInstance.logoTextAnimation;
 chalkInstance.playLogo = chalkInstance.logoAnimation;
 
 module.exports = chalkInstance;

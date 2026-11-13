@@ -1,6 +1,6 @@
 // video-play.js
 const path = require("path");
-const codes = require(path.join(__dirname, "rgb-codes.js"));
+const codes = require(path.join(__dirname, "..", "src", "rgb-codes.js"));
 
 module.exports = function videoPlayer(
   videoPath,

@@ -1,6 +1,6 @@
 // camera-stream.js
 const path = require("path");
-const codes = require(path.join(__dirname, "rgb-codes.js"));
+const codes = require(path.join(__dirname, "..", "src", "rgb-codes.js"));
 
 module.exports = function cameraStream(duration = 15000, options = {}) {
   const { spawn } = require("child_process");
