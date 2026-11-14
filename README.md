@@ -30,6 +30,27 @@ _Note: Ensure you have [FFmpeg](https://ffmpeg.org) installed in your system PAT
 
 When using advanced media streaming methods, you can pass an optional `options` object to configure resolution and behavior:
 
+### `LogoTextOptions` (Object)
+
+- **`style`** (String, default: `'forge'`): Animation style (`'forge'`, `'pop'`, `'slide'`, or `'hacker'`).
+- **`color`** (String): Color name from the palette (e.g., `'Gold'`, `'DeepSkyBlue'`).
+- **`speed`** (Number, default: `1`): Speed multiplier for the animation.
+
+### `LogoDrawOptions` (Object)
+
+- **`mode`** (String, default: `'outline'`): Drawing trajectory (`'outline'` traces the outer contour first then fills the inside, `'zigzag'` draws row-by-row snake style, `'spiral'` spirals out from the center, `'scanline'` scans top-to-bottom).
+- **`fps`** (Number, default: `30`): Target frame rate.
+- **`duration`** (Number, default: `1500`): Total drawing duration in milliseconds.
+- **`brushGlow`** (Boolean, default: `true`): Illuminates the tip of the virtual brush while drawing.
+- **`padLeft`** (Number, default: `2`): Left margin padding in spaces.
+
+### `LogoOptions` (Object)
+
+- **`duration`** (Number, default: `4000`): Total duration of the 3D animation in milliseconds.
+- **`explodeOnStart`** (Boolean, default: `true`): Assembles the logo from scattered 3D particles at the beginning.
+- **`explodeOnEnd`** (Boolean, default: `true`): Dissolves the logo into flying particles right before finishing.
+- **`force3D`** (Boolean, default: `false`): Bypasses the built-in CPU benchmark check (weak or overloaded CPUs automatically fall back to a lightweight spinner).
+
 ### `VideoOptions` (Object)
 
 - **`hyperExpansion`** (Boolean, default: `false`): When `true`, enables ultra-high-resolution rendering using a multi-color Unicode Braille matrix ($2\times4$ sub-pixels per character cell). When `false`, uses the high-quality half-block (`▀`) TrueColor mode ($1\times2$ pixels per cell).
@@ -186,6 +207,59 @@ scan.stop("Done!");
 ### 🖥️ 3. Full-Screen Visual Effects (VFX) & Telemetry
 
 > ⚠️ **Screen behavior:** All functions below automatically render the animation on an alternate terminal screen. Upon completion, they clear the animation and restore your console to its original state without cluttering the log history.
+
+#### `chalk.logoAnimation(text, options)` _(Also available via `.logoTextAnimation` / `chalk.animation.logoAnimation`)_
+
+- **Action:** Displays a full-screen stylized text logo animation.
+- **Arguments:**
+  - `text` (String) — the banner text to animate.
+  - `options` (LogoTextOptions) — configuration object: `{ style: 'forge' | 'pop' | 'slide' | 'hacker', color, speed }`.
+- **Returns:** `Promise<void>`.
+- **Example:**
+
+```javascript
+await chalk.logoAnimation("CHALK", {
+  style: "hacker",
+  color: "DeepSkyBlue",
+  speed: 1.2,
+});
+```
+
+#### `chalk.drawLogo(filePath, options)` _(Also available via `chalk.animation.drawLogo`)_
+
+- **Action:** Decodes a local PNG image with **zero dependencies** (no FFmpeg required) and draws it pixel-by-pixel in the terminal using a glowing virtual brush effect. Automatically scales to fit your terminal width and height.
+- **Arguments:**
+  - `filePath` (String) — path to your `.png` logo file.
+  - `options` (LogoDrawOptions) — configuration for trajectory mode (`'outline'`, `'zigzag'`, `'spiral'`, `'scanline'`), duration, and brush glow.
+- **Returns:** `Promise<void>`.
+- **Example:**
+
+```javascript
+// Trace the outer contour of the PNG logo first, then fill the interior
+await chalk.drawLogo("./logo.png", {
+  mode: "outline",
+  duration: 1800,
+  brushGlow: true,
+});
+```
+
+#### `chalk.playLogo(filePath, options)` _(Also available via `.playLogo3D` / `chalk.animation.playLogo`)_
+
+- **Action:** Converts any local PNG image (RGB, RGBA, Grayscale, or Indexed PLTE) into a 3D voxel model with **zero dependencies**, auto-crops black or transparent margins, and renders a full-screen 24-bit TrueColor 3D rotation with particle explosions and built-in CPU performance protection.
+- **Arguments:**
+  - `filePath` (String) — path to your `.png` logo file.
+  - `options` (LogoOptions) — configuration for duration, start/end particle explosions, and CPU fallback.
+- **Returns:** `Promise<void>`.
+- **Example:**
+
+```javascript
+// Full-screen 3D rotating PNG logo with start & end particle explosions
+await chalk.playLogo("./logo.png", {
+  duration: 4500,
+  explodeOnStart: true,
+  explodeOnEnd: true,
+});
+```
 
 #### `.videoPlay(videoPath, duration, options)` _(Also available via root `chalk.videoPlay` / `.playVideo`)_
 

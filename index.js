@@ -14,6 +14,9 @@ function getAnimation() {
       path.join(__dirname, "anim", "animation.js"),
     );
     animationInstance = new AnimationClass();
+    animationInstance.logoAnimation = chalkInstance.logoAnimation;
+    animationInstance.drawLogo = chalkInstance.drawLogo;
+    animationInstance.playLogo = chalkInstance.playLogo;
   }
   return animationInstance;
 }
@@ -64,13 +67,13 @@ function createChalk(activeCodes = []) {
         styleProp.slice(2) in RGB_COLORS
       ) {
         const [r, g, b] = RGB_COLORS[styleProp.slice(2)];
-        nextCode = `\u001b[48;2;${r};${g};${b}m`; // Исправлено экранирование и шаблонизация
+        nextCode = `\u001b[48;2;${r};${g};${b}m`;
       } else if (styleProp in RGB_COLORS) {
         const [r, g, b] = RGB_COLORS[styleProp];
-        nextCode = `\u001b[38;2;${r};${g};${b}m`; // Исправлено экранирование и шаблонизация
+        nextCode = `\u001b[38;2;${r};${g};${b}m`;
       } else if (styleProp === "custom") {
         const [r, g, b] = customColor;
-        nextCode = `\u001b[38;2;${r};${g};${b}m`; // Исправлено экранирование и шаблонизация
+        nextCode = `\u001b[38;2;${r};${g};${b}m`;
       } else {
         return target[prop];
       }
@@ -134,22 +137,25 @@ chalkInstance.cameraStream = function (duration = 15000, options = {}) {
   );
   return cameraStream(duration, options);
 };
-
 chalkInstance.logoTextAnimation = function (text, options = {}) {
-  const logoAnimation = require(
+  const logoTextAnimation = require(
     path.join(__dirname, "logo", "logo-text-animation.js"),
   );
-  return logoAnimation(text, options);
+  return logoTextAnimation(text, options);
 };
-
-// Динамические пробросы методов быстрого доступа на корень инстанса
+chalkInstance.drawLogo = function (filePath, options = {}) {
+  const { drawLogo } = require(path.join(__dirname, "logo", "logo-drawer.js"));
+  return drawLogo(filePath, options);
+};
+chalkInstance.playLogo = function (filePath, options = {}) {
+  const { playLogo3D } = require(path.join(__dirname, "logo", "logo-3d.js"));
+  return playLogo3D(filePath, options);
+};
 chalkInstance.audioVisualizer = (dur) => getAnimation().audioVisualizer(dur);
 chalkInstance.textDecrypt = (txt, dur) => getAnimation().textDecrypt(txt, dur);
 chalkInstance.radarSpinner = (txt) => getAnimation().radarSpinner(txt);
 chalkInstance.snake = () => getGames().snake();
 chalkInstance.pong = () => getGames().pong();
-
-// Алиасы для обратной совместимости и типов PascalCase
 chalkInstance.Url = chalkInstance.url;
 chalkInstance.Hex = chalkInstance.hex;
 chalkInstance.HexToRgbOb = chalkInstance.hexToRgbOb;
@@ -164,6 +170,13 @@ chalkInstance.CameraStream = chalkInstance.cameraStream;
 chalkInstance.StreamCamera = chalkInstance.cameraStream;
 chalkInstance.streamCamera = chalkInstance.cameraStream;
 chalkInstance.LogoTextAnimation = chalkInstance.logoTextAnimation;
-chalkInstance.playLogo = chalkInstance.logoAnimation;
+chalkInstance.LogoTextAnimation = chalkInstance.logoTextAnimation;
+chalkInstance.LogoAnimation = chalkInstance.logoAnimation;
+
+chalkInstance.DrawLogo = chalkInstance.drawLogo;
+
+chalkInstance.PlayLogo = chalkInstance.playLogo;
+chalkInstance.playLogo3D = chalkInstance.playLogo;
+chalkInstance.PlayLogo3D = chalkInstance.playLogo;
 
 module.exports = chalkInstance;

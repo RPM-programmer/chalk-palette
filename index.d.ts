@@ -1,21 +1,45 @@
-export interface RgbColor {
+interface RgbColor {
   red: number;
   green: number;
   blue: number;
 }
-export interface VideoOptions {
+interface VideoOptions {
   /** Enable ultra-high resolution Braille matrix rendering / Включить ультра-высокое разрешение через матрицу Брайля */
   hyperExpansion?: boolean;
 }
-export interface LogoTextOptions {
+interface LogoTextOptions {
   /** Animation style: 'forge' (Minecraft fall), 'slide' (horizontal entrance), 'pop' (heartbeat bounce), 'hacker' (sys-command + matrix rain) */
-  style?: "forge" | "slide" | "pop";
+  style?: "forge" | "slide" | "pop" | "hacker";
   /** Color name from palette (e.g. 'Gold', 'DeepSkyBlue', 'Green') */
   color?: string;
   /** Speed multiplier (Default: 1) */
   speed?: number;
 }
-export interface CameraOptions {
+interface LogoDrawOptions {
+  /** Drawing path mode: 'outline' (contour + fill), 'zigzag', 'spiral', 'scanline' (Default: 'outline') */
+  mode?: "outline" | "zigzag" | "spiral" | "scanline";
+  /** Frames per second (Default: 30) */
+  fps?: number;
+  /** Total drawing duration in milliseconds (Default: 1500) */
+  duration?: number;
+  /** Highlight the tip of the virtual brush while drawing (Default: true) */
+  brushGlow?: boolean;
+  /** Left margin in spaces (Default: 2) */
+  padLeft?: number;
+}
+
+interface LogoOptions {
+  /** Animation duration in milliseconds (Default: 4000) / Длительность анимации в мс */
+  duration?: number;
+  /** Assemble logo from exploding particles at start (Default: true) / Сборка из взрыва частиц при старте */
+  explodeOnStart?: boolean;
+  /** Scatter logo into particles at the end (Default: true) / Разлёт частиц в конце */
+  explodeOnEnd?: boolean;
+  /** Bypass automatic CPU performance check (Default: false) / Отключить проверку производительности CPU */
+  force3D?: boolean;
+}
+
+interface CameraOptions {
   /** Mirror the video stream horizontally (Default: true) / Отразить видеопоток по горизонтали (По умолчанию: true) */
   mirror?: boolean;
   /** Enable ultra-high resolution Braille matrix rendering / Включить ультра-высокое разрешение через матрицу Брайля */
@@ -198,6 +222,13 @@ declare class GamesInstance {
   pong(): Promise<void>;
 }
 declare class AnimationInstance {
+  /** Full-screen text logo animation / Полноэкранная анимация текстового логотипа */
+  logoAnimation(text: string, options?: LogoTextOptions): Promise<void>;
+  /** Step-by-step brush/laser drawing of a PNG logo / Пошаговая отрисовка PNG-логотипа */
+  drawLogo(filePath: string, options?: LogoDrawOptions): Promise<void>;
+  /** Full-screen 3D rotating PNG logo / Полноэкранное 3D-вращение PNG-логотипа */
+  playLogo(filePath: string, options?: LogoOptions): Promise<void>;
+
   /** Rainbow scrolling text / Бегущая радужная строка */
   rainbow(text: string, speed?: number): { stop(): void };
   /** Typewriter simulation / Имитация печатной машинки */
@@ -351,8 +382,24 @@ interface ChalkUtilityMethods {
   streamCamera(duration?: number, options?: CameraOptions): Promise<void>;
   /** Stream real-time camera video directly into terminal as ASCII (PascalCase alias) / Трансляция видео с веб-камеры в терминал в реальном времени */
   CameraStream(duration?: number, options?: CameraOptions): Promise<void>;
+  /** Full-screen text logo animation (Alias) */
   logoTextAnimation(text: string, options?: LogoTextOptions): Promise<void>;
-  playLogo(text: string, options?: LogoOptions): Promise<void>;
+  /** Full-screen text logo animation (PascalCase alias) */
+  LogoTextAnimation(text: string, options?: LogoTextOptions): Promise<void>;
+
+  /** Step-by-step brush/laser drawing of a PNG logo with zero dependencies / Пошаговая отрисовка PNG-логотипа без зависимостей */
+  drawLogo(filePath: string, options?: LogoDrawOptions): Promise<void>;
+  /** Step-by-step brush/laser drawing of a PNG logo (PascalCase alias) */
+  DrawLogo(filePath: string, options?: LogoDrawOptions): Promise<void>;
+
+  /** Render a full-screen 3D rotating PNG logo with zero dependencies / Полноэкранное 3D-вращение PNG-логотипа без зависимостей */
+  playLogo(filePath: string, options?: LogoOptions): Promise<void>;
+  /** Render a full-screen 3D rotating PNG logo (PascalCase alias) */
+  PlayLogo(filePath: string, options?: LogoOptions): Promise<void>;
+  /** Render a full-screen 3D rotating PNG logo (Alias) */
+  playLogo3D(filePath: string, options?: LogoOptions): Promise<void>;
+  /** Render a full-screen 3D rotating PNG logo (PascalCase alias) */
+  PlayLogo3D(filePath: string, options?: LogoOptions): Promise<void>;
 }
 interface ChalkCallable {
   (text?: string): ChalkInstance | string;
