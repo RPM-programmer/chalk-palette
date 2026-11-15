@@ -1,4 +1,15 @@
-# chalk-palette
+<div align="center">
+   <img src="https://github.com/RPM-programmer/chalk-palette/blob/main/logo/logo.png?raw=true" width="250px">
+   <h1>chalk-palette</h1>
+   <table>
+    <tr>
+      <td align="center">
+        <img src="https://github.com/RPM-programmer/chalk-palette/blob/access/gifs/logo3DAnimation.gif?raw=true" alt="chalk-palette animation" width="600" />
+      </td>
+    </tr>
+   </table>
+   <p><a href="https://github.com/RPM-programmer/chalk-palette/blob/access">Больше анимаций...</a></p>
+</div>
 
 <p align="left">
   <b>English</b> | <a href="./README.ru.md">Русский</a>
